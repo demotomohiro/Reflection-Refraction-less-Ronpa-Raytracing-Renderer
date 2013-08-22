@@ -1,4 +1,5 @@
-#line 1 "planes.s"
+#include "noise.s"
+#line 3 "planes.s"
 
 const float focus = 1.0;
 //slider[0.1,1,4]
@@ -344,7 +345,7 @@ vec3 ball(vec2 c, float rad_scr)
 	return vec3(box_color)*1.2 + lit + lit2 - blk;
 }
 
-vec3 color(vec2 c)
+vec3 main_pic(vec2 c)
 {
 //	return vec3(c.x, c.y, 0.0);
 	const float rad_scr = 0.23;
@@ -363,5 +364,48 @@ vec3 color(vec2 c)
 			return tube_plane_backgroud(c);
 		}
 	}
+}
+
+float perlin2D(vec3 pos)
+{
+	float c = 0.0;
+	float s = 4.0;
+	for(int i=0; i<6; ++i)
+	{
+		c += softnoise(vec3(pos)+vec3(1.0/float(i+2)), s)/s*2.0;
+		s *= 2.0;
+	}
+
+	return c;
+}
+
+vec3 color(vec2 c)
+{
+	vec2 pplr = polar(vec2(c)*0.5-vec2(1.1, 0.6));
+	pplr.x *= 8.0;
+	if(perlin2D(vec3(pplr, 0.2))>pplr.y*0.3+0.3)
+	{
+		return vec3(1.0, 0.0, 0.0);
+	}
+
+	vec2 leftdown = c*0.5 + vec2(1.1, 0.6);
+	float dense = 16.0;
+	vec2 flrld = floor(leftdown*dense)/dense;
+	if(rand(vec3(flrld, 0.22))>length(flrld)*0.8+0.2)
+	{
+		vec2 frcld = (leftdown - flrld)*dense*2.0-1.0;
+		float d = max(abs(frcld.x), abs(frcld.y));
+		dense = 64.0;
+		flrld = floor(leftdown*dense)/dense;
+		ivec2 ild = ivec2(floor(leftdown*dense));
+		if(rand(vec3(flrld, 0.21))>/*length(flrld)*/0.1 || d < 0.7)
+		{
+		//	if(((ild.x^ild.y)&1) == 0 || d < 0.7)
+				return vec3(d);
+		}
+	}
+
+
+	return main_pic(c);
 }
 
