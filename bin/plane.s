@@ -379,7 +379,7 @@ float perlin2D(vec3 pos)
 	return c;
 }
 
-vec3 color(vec2 c)
+vec3 master_pic(vec2 c)
 {
 	vec2 pplr = polar(vec2(c)*0.5-vec2(1.1, 0.6));
 	pplr.x *= 8.0;
@@ -409,3 +409,47 @@ vec3 color(vec2 c)
 	return main_pic(c);
 }
 
+const vec2 frm = vec2(16.0/10.0, 1.0);
+
+vec3 real_master_pic(vec2 c)
+{
+//	return master_pic(c);
+	vec2 uv = c*vec2(1.2);
+	if(all(lessThan(abs(uv), frm)))
+		return master_pic(uv);
+
+	vec2 auv = abs(uv)-vec2(0.1);
+	vec2 ouv = abs(auv - frm);
+	return vec3(cos(min(ouv.x, ouv.y)*9.0))*vec3(0.9, 0.8, 0.2);
+	//if(abs(max(auv.x, auv.y) - frm) )
+}
+
+vec3 stars(vec2 c)
+{
+	float lit = 0;
+	vec2 leftdown = c*0.5 + vec2(1.1, 0.6);
+	float dense = 8.0;
+	for(int i=0; i<6; ++i)
+	{
+		vec2 dense_uv = leftdown*dense;
+		vec2 lcl_uv = fract(dense_uv)*2.0-1.0;
+		vec2 flrld = floor(dense_uv)/dense;//vec2(log(dense)*0.0001);
+		if(rand(vec3(flrld, 0.32))>0.5)
+		{
+			vec2 offset = vec2(2.1, 1.1) + vec2((sin(dense)))*0.005;
+			vec2 uv = (flrld*2.0-offset)*vec2(1.2);
+			vec2 auv = abs(uv)-vec2(0.1);
+			vec2 ouv = abs(auv - frm);
+			if(min(ouv.x, ouv.y) < 0.15)
+				lit += max((1.0/(1.0+distance(lcl_uv, 0.5))-0.5)*2.0, 0.0);
+		}
+		dense *= 1.2;
+	}
+
+	return lit*vec3(0.8);
+}
+
+vec3 color(vec2 c)
+{
+	return real_master_pic(c) + stars(c);
+}
