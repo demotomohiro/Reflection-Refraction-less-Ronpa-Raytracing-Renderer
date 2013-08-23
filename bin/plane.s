@@ -426,7 +426,7 @@ vec3 real_master_pic(vec2 c)
 
 vec3 stars(vec2 c)
 {
-	float lit = 0;
+	float lit = 0.0;
 	vec2 leftdown = c*0.5 + vec2(1.1, 0.6);
 	float dense = 8.0;
 	for(int i=0; i<6; ++i)
@@ -442,6 +442,8 @@ vec3 stars(vec2 c)
 			vec2 ouv = abs(auv - frm);
 			if(min(ouv.x, ouv.y) < 0.15)
 				lit += max((1.0/(1.0+distance(lcl_uv, 0.5))-0.5)*2.0, 0.0);
+			else if(any(greaterThan(abs(uv), frm)))
+				lit += clamp(pow(distance(lcl_uv, 16.0), 4.0), 0.0, 1.0);
 		}
 		dense *= 1.2;
 	}
