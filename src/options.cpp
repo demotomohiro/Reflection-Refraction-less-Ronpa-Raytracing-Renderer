@@ -11,8 +11,12 @@ using namespace boost;
 using namespace std;
 
 options::options(int argc, char* argv[]):
-	is_render(false),	ret_code(0),
-	source_file("main_shader.frag")
+	is_render(false),
+	is_draw_particles(false),
+	ret_code(0),
+	source_file("main_shader.frag"),
+	particle_vert_source_file("particle.vert"),
+	particle_frag_source_file("particle.frag")
 {
 	//Ç±Ç±Ç≈ÇÕOpenGLÇÃä÷êîÇåƒÇ—èoÇµÇƒÇÕÇ¢ÇØÇ»Ç¢.
 	try
@@ -20,16 +24,20 @@ options::options(int argc, char* argv[]):
 	program_options::options_description desc("Allowed options");
 	desc.add_options()
 		("help",	"produce help message")
-		("source",		program_options::value<string>(),	"Fragment shader source")
-		("output_w",	program_options::value<GLsizei>(),	"Output image width")
-		("output_h",	program_options::value<GLsizei>(),	"Output image height")
-		("num_tile_x",	program_options::value<GLsizei>(),	"Number of tiles in x axis")
-		("num_tile_y",	program_options::value<GLsizei>(),	"Number of tiles in y axis")
-		("super_sampling_level",	program_options::value<GLsizei>(), "super sampling level")
+		("source",		program_options::value<string>(),	"Fullscreen fragment shader source"	)
+		("pv_source",	program_options::value<string>(),	"Particle vertex shader source"		)
+		("pf_source",	program_options::value<string>(),	"Particle fragment shader source"	)
+		("output_w",	program_options::value<GLsizei>(),	"Output image width"				)
+		("output_h",	program_options::value<GLsizei>(),	"Output image height"				)
+		("num_tile_x",	program_options::value<GLsizei>(),	"Number of tiles in x axis"			)
+		("num_tile_y",	program_options::value<GLsizei>(),	"Number of tiles in y axis"			)
+		("super_sampling_level",	program_options::value<GLsizei>(), "super sampling level"	)
 	;
 
 	program_options::positional_options_description	p;
-	p.add("source", 1);
+	p.add("source",		1);
+	p.add("pv_source",	2);
+	p.add("pf_source",	3);
 
 	program_options::variables_map vm;
 	program_options::store
@@ -104,6 +112,26 @@ options::options(int argc, char* argv[]):
 	{
 		source_file = vm["source"].as<string>();
 		is_render = true;
+		if(!vm.count("pv_source") && !vm.count("pf_source"))
+		{
+			particle_vert_source_file.clear();
+			particle_frag_source_file.clear();
+		}
+	}
+
+	if(vm.count("pv_source"))
+	{
+		particle_vert_source_file = vm["pv_source"].as<string>();
+	}
+
+	if(vm.count("pf_source"))
+	{
+		particle_frag_source_file = vm["pf_source"].as<string>();
+	}
+
+	if(!particle_vert_source_file.empty() && !particle_frag_source_file.empty())
+	{
+		is_draw_particles = true;
 	}
 
 	}catch(std::exception& e)

@@ -55,8 +55,11 @@ struct options
 	options(int argc, char* argv[]);
 
 	bool		is_render;
+	bool		is_draw_particles;
 	int			ret_code;
 	std::string	source_file;
+	std::string particle_vert_source_file;
+	std::string particle_frag_source_file;
 	render_info	rinfo;
 };
 
