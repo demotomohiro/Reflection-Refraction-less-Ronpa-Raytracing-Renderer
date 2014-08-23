@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\batchRIshader.cpp" />
+    <ClCompile Include="..\src\cstd_shader.cpp" />
     <ClCompile Include="..\src\frame_buffer_object.cpp" />
     <ClCompile Include="..\src\glcontext.cpp" />
     <ClCompile Include="..\src\image_file.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="..\src\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\cstd_shader.hpp" />
     <ClInclude Include="..\src\custom_directives.hpp" />
     <ClInclude Include="..\src\frame_buffer_object.hpp" />
     <ClInclude Include="..\src\glcontext.hpp" />

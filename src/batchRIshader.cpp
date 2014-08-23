@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <string>
 
@@ -12,10 +11,9 @@
 #include "gl_common.hpp"
 #include "glcontext.hpp"
 #include "shader.hpp"
+#include "cstd_shader.hpp"
 #include "frame_buffer_object.hpp"
 #include "image_file.hpp"
-#define TOFU_OPENGL_GLSL_PREPROCESSOR_ENABLE_EMIT_LINE_DIRECTIVES 1
-#include "glsl_preprocessor.hpp"
 #include "options.hpp"
 
 using namespace std;
@@ -98,41 +96,6 @@ void print_gl_info()
 	cout << "OpenGL version:" << major_ver << "." << minor_ver << endl;
 }
 
-GLuint load_shader(GLenum type, const string& source, bool& status)
-{
-	using namespace gl_util;
-
-	status = false;
-
-	cout << "Loading " <<
-		(
-		type == GL_VERTEX_SHADER	? "vertex" :
-		type == GL_FRAGMENT_SHADER	? "fragment" :
-		"nazo"
-		)
-		<<
-		" shader ... ";
-
-	const string pp_source = tofu::glsl::glsl_preprocessor(source);
-	GLuint shader = get_shader_obj(type, pp_source);
-	if(shader == 0)
-	{
-		cerr << "\nFailed to create shader\n";
-		return 0;
-	}
-
-	status = compile_shader(shader);
-	cout << (status ? "Success!\n" : "Failed!\n");
-	const string log = get_shader_info_log(shader);
-	if(log.length() > 1)
-	{
-		cerr << "Arigatai message from GLSL compiler:\n";
-		cerr << log << endl;
-	}
-
-	return shader;
-}
-
 const char* vert_shader_source =
 "#version 430\n"
 "\n"
@@ -173,19 +136,9 @@ struct renderer
 			return ;
 		}
 
-		const std::string& source_file = opts.source_file;
-		cout << "Loading " << source_file << endl;
-		std::ifstream ifs(source_file);
-		if(!ifs.good())
-		{
-			cerr << "Failed to read the file!\n";
-			return;
-		}
-		std::string frag_shader_source(
-			std::istreambuf_iterator<char>(ifs.rdbuf()),
-			std::istreambuf_iterator<char>());
-
-		scoped_shader frag_shader(load_shader(GL_FRAGMENT_SHADER, frag_shader_source, status));
+		scoped_shader frag_shader(
+			load_shader_from_file(
+				GL_FRAGMENT_SHADER, opts.source_file, status));
 		if(!status)
 		{
 			return;
