@@ -144,17 +144,7 @@ struct renderer
 			return;
 		}
 
-		cout << "Linking shader objects to 1 program object ... ";
-		program = get_program_obj(vert_shader, frag_shader);
-		status = link_program(program);
-		cout << (status ? "Success!\n" : "Failed!\n");
-		const string log = get_program_info_log(program);
-		if(log.length() > 1)
-		{
-			cerr << "Musidekinai message from GLSL linker:\n";
-			cerr << log << endl;
-		}
-
+		program = link_program(vert_shader, frag_shader, status);
 		if(!status)
 		{
 			return;
@@ -207,6 +197,7 @@ private:
 	bool					is_render;
 	gl_util::glcontext		cntxt;
 	gl_util::scoped_program	program;
+	gl_util::scoped_program	particle_program;
 };
 
 }

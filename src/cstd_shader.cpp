@@ -69,3 +69,21 @@ GLuint gl_util::load_shader_from_file(GLenum type, const std::string& file, bool
 	return gl_util::load_shader(type, source, status);
 }
 
+GLuint gl_util::link_program(GLuint vert_shader, GLuint frag_shader, bool& status)
+{
+	using namespace std;
+
+	cout << "Linking shader objects to 1 program object ... ";
+	const GLuint	program = get_program_obj(vert_shader, frag_shader);
+	status = link_program(program);
+	cout << (status ? "Success!\n" : "Failed!\n");
+	const string log = get_program_info_log(program);
+	if(log.length() > 1)
+	{
+		cerr << "Musidekinai message from GLSL linker:\n";
+		cerr << log << endl;
+	}
+
+	return program;
+}
+
