@@ -35,9 +35,10 @@ options::options(int argc, char* argv[]):
 	;
 
 	program_options::positional_options_description	p;
-	p.add("source",		1);
-	p.add("pv_source",	2);
-	p.add("pf_source",	3);
+	p.
+		add("source",		1).
+		add("pv_source",	1).
+		add("pf_source",	1);
 
 	program_options::variables_map vm;
 	program_options::store

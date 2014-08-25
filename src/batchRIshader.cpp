@@ -126,7 +126,47 @@ struct renderer
 
 		print_gl_info();
 		init_gl();
+		init_fullscreen_program(opts);
+		init_particle_program(opts);
 
+		GLuint vao;
+		glGenVertexArrays(1, &vao);
+		glBindVertexArray(vao);
+
+		const render_info& ri = opts.rinfo;
+		GL_CALL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+		GL_CALL(glPixelStorei(GL_PACK_ROW_LENGTH, ri.output_w));
+
+		ret = 0;
+		is_render = true;
+	}
+
+	int get_ret() const
+	{
+		return ret;
+	}
+
+	bool get_is_render() const
+	{
+		return is_render;
+	}
+
+	GLuint get_program() const
+	{
+		assert(glIsProgram(program));
+		return program;
+	}
+
+	GLuint get_particle_program() const
+	{
+		assert(glIsProgram(particle_program));
+		return particle_program;
+	}
+
+private:
+
+	void	init_fullscreen_program(const options& opts)
+	{
 		using namespace gl_util;
 
 		bool status;
@@ -164,34 +204,43 @@ struct renderer
 			const float res[] = {(float)ri.output_w*spr_smpl_w, (float)ri.output_h*spr_smpl_w};
 			glUniform2fv(loc, 1, res);
 		}
-
-		GLuint vao;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-		GL_CALL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
-		GL_CALL(glPixelStorei(GL_PACK_ROW_LENGTH, ri.output_w));
-
-		ret = 0;
-		is_render = true;
 	}
 
-	int get_ret() const
+	void	init_particle_program(const options& opts)
 	{
-		return ret;
-	}
+		using namespace gl_util;
 
-	bool get_is_render() const
-	{
-		return is_render;
-	}
+		if(!opts.is_draw_particles)
+		{
+			return;
+		}
 
-	GLuint get_program() const
-	{
-		assert(glIsProgram(program));
-		return program;
-	}
+		bool status;
+		scoped_shader vert_shader(
+			load_shader_from_file(
+				GL_VERTEX_SHADER, opts.particle_vert_source_file, status));
+		if(!status)
+		{
+			return ;
+		}
 
-private:
+		scoped_shader frag_shader(
+			load_shader_from_file(
+				GL_FRAGMENT_SHADER, opts.particle_frag_source_file, status));
+		if(!status)
+		{
+			return;
+		}
+
+		particle_program = link_program(vert_shader, frag_shader, status);
+		if(!status)
+		{
+			return;
+		}
+
+		glUseProgram(particle_program);
+		glEnable(GL_PROGRAM_POINT_SIZE);
+	}
 
 	int						ret;
 	bool					is_render;
@@ -244,17 +293,25 @@ int main(int argc, char* argv[])
 
 	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
 
+	cout << "Rendering ..." << endl;
+
 	const GLsizei tile_w = ri.get_tile_width();
 	const GLsizei tile_h = ri.get_tile_height();
 	for(GLsizei j=0; j<ri.num_tile_y; ++j)
 	for(GLsizei i=0; i<ri.num_tile_x; ++i)
 	{
+		GL_CALL(glUseProgram(r.get_program()));
 		if(coord_offset_loc != -1)
 		{
 			const float offset[] = {(float)i*ri.get_draw_w(), (float)j*ri.get_draw_h()};
 			glUniform2fv(coord_offset_loc, 1, offset);
 		}
 		GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 3));
+		if(opts.is_draw_particles)
+		{
+			GL_CALL(glUseProgram(r.get_particle_program()));
+			GL_CALL(glDrawArrays(GL_POINTS, 0, 3));
+		}
 
 		glGenerateMipmap(GL_TEXTURE_2D);
 		GL_CALL(glPixelStorei(GL_PACK_SKIP_PIXELS,	i*tile_w));
@@ -270,6 +327,9 @@ int main(int argc, char* argv[])
 			)
 		);
 	}
+
+	cout << "Rendering completed" << endl;
+	cout << "Writing to file" << endl;
 
 //	cout << color_buf[0] << endl;
 	if(!write_image(ri.output_w, ri.output_h, "test.png", color_buf.data()))
