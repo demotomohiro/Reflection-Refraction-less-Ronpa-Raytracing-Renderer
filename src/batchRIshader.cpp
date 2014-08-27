@@ -272,13 +272,38 @@ int main(int argc, char* argv[])
 	glGetIntegerv(GL_CURRENT_PROGRAM, reinterpret_cast<GLint*>(&prog));
 	assert(glIsProgram(prog)==GL_TRUE);
 
-	GLint coord_offset_loc = glGetUniformLocation(r.get_program(), "coord_offset");
+	const GLint coord_offset_loc = glGetUniformLocation(r.get_program(), "coord_offset");
 	if(coord_offset_loc == -1)
 	{
-		cerr << "Warning, add & use \"uniform vec2 coord_offset;\" in your fragment shader.\n";
+		cerr << "Warning, add & use \"uniform vec2 coord_offset;\" in your fullscreen fragment shader.\n";
 	}
 
 	const render_info& ri = opts.rinfo;
+
+	if(opts.is_draw_particles)
+	{
+		GL_CALL(glUseProgram(r.get_particle_program()));
+		const GLint loc = glGetUniformLocation(r.get_particle_program(), "viewport_scale");
+		if(loc == -1)
+		{
+			cerr << "Warning, add & use \"uniform vec2 viewport_scale;\" in your particle vertex shader.\n";
+		}
+		glUniform2f(loc, (float)ri.num_tile_x, (float)ri.num_tile_y);
+	}
+	const GLint viewport_offset_loc = 
+		opts.is_draw_particles ?
+		[&](){
+			GL_CALL(glUseProgram(r.get_particle_program()));
+			const GLint loc = glGetUniformLocation(r.get_particle_program(), "viewport_offset");
+			if(loc == -1)
+			{
+				cerr << "Warning, add & use \"uniform vec2 viewport_offset;\" in your particle vertex shader.\n";
+			}
+			return loc;
+		}()
+		:
+		-1;
+
 
 //	frame_buffer_object fbo
 	frame_buffer_object_with_texture fbo
@@ -310,6 +335,10 @@ int main(int argc, char* argv[])
 		if(opts.is_draw_particles)
 		{
 			GL_CALL(glUseProgram(r.get_particle_program()));
+			if(viewport_offset_loc != -1)
+			{
+				glUniform2f(viewport_offset_loc, (float)i, (float)j);
+			}
 			GL_CALL(glDrawArrays(GL_POINTS, 0, 3));
 		}
 
