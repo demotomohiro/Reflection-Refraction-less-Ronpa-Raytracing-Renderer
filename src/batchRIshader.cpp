@@ -382,7 +382,7 @@ int main(int argc, char* argv[])
 	cout << "Writing to file" << endl;
 
 //	cout << color_buf[0] << endl;
-	if(!write_image(ri.output_w, ri.output_h, "test.png", color_buf.data()))
+	if(!write_image(ri.output_w, ri.output_h, opts.output_file, color_buf.data()))
 	{
 		cerr << "Failed to write file!\n";
 		return 1;

@@ -60,6 +60,7 @@ struct options
 	std::string	source_file;
 	std::string particle_vert_source_file;
 	std::string particle_frag_source_file;
+	std::string output_file;
 	render_info	rinfo;
 };
 

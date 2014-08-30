@@ -16,7 +16,8 @@ options::options(int argc, char* argv[]):
 	ret_code(0),
 	source_file("main_shader.frag"),
 	particle_vert_source_file("particle.vert"),
-	particle_frag_source_file("particle.frag")
+	particle_frag_source_file("particle.frag"),
+	output_file("test.png")
 {
 	//Ç±Ç±Ç≈ÇÕOpenGLÇÃä÷êîÇåƒÇ—èoÇµÇƒÇÕÇ¢ÇØÇ»Ç¢.
 	try
@@ -27,6 +28,7 @@ options::options(int argc, char* argv[]):
 		("source",		program_options::value<string>(),	"Fullscreen fragment shader source"	)
 		("pv_source",	program_options::value<string>(),	"Particle vertex shader source"		)
 		("pf_source",	program_options::value<string>(),	"Particle fragment shader source"	)
+		("output",		program_options::value<string>(),	"Output image file"					)
 		("output_w",	program_options::value<GLsizei>(),	"Output image width"				)
 		("output_h",	program_options::value<GLsizei>(),	"Output image height"				)
 		("num_tile_x",	program_options::value<GLsizei>(),	"Number of tiles in x axis"			)
@@ -55,6 +57,12 @@ options::options(int argc, char* argv[]):
 	{
 		cout << desc << "\n";
 		return;
+	}
+
+	if(vm.count("output"))
+	{
+		output_file = vm["output"].as<string>();
+		cout << "output: " << output_file << '\n';
 	}
 
 	if(vm.count("output_w"))
