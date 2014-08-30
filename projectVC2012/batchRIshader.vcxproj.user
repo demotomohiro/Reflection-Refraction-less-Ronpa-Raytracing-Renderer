@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerWorkingDirectory>$(ProjectDir)../src</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments> --output_w 640  --output_h 480 --num_tile_x 1 --num_tile_y 1 --super_sampling_level 0 test_frag_shader.frag particle.vert particle.frag</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments> --output_w 640  --output_h 480 --num_tile_x 5 --num_tile_y 3 --super_sampling_level 1 grid_fullscr.frag particle.vert particle.frag</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerCommandArguments>test_frag_shader.frag</LocalDebuggerCommandArguments>

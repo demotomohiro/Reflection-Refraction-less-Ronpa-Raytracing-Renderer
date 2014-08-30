@@ -240,6 +240,33 @@ private:
 
 		glUseProgram(particle_program);
 		glEnable(GL_PROGRAM_POINT_SIZE);
+
+		const render_info& ri = opts.rinfo;
+		{
+			const GLint loc = glGetUniformLocation(particle_program, "viewport_scale");
+			if(loc == -1)
+			{
+				cerr << "Warning, add & use \"uniform vec2 viewport_scale;\" in your particle vertex shader.\n";
+			}
+			glUniform2f(loc, (float)ri.num_tile_x, (float)ri.num_tile_y);
+		}
+		{
+			const GLint loc = glGetUniformLocation(particle_program, "viewport_size");
+			if(loc == -1)
+			{
+				cerr << "Warning, add & use \"uniform vec2 viewport_size;\" in your particle vertex shader.\n";
+			}
+			glUniform2f(loc, (GLfloat)ri.get_draw_w(), (GLfloat)ri.get_draw_h());
+		}
+		{
+			const GLint loc = glGetUniformLocation(particle_program, "aspect_rate");
+			if(loc == -1)
+			{
+				cerr << "Warning, add & use \"uniform float aspect_rate;\" in your particle vertex shader.\n";
+			}
+			const GLfloat aspect_rate = (GLfloat)ri.output_h/(GLfloat)ri.output_w;
+			glUniform1f(loc, aspect_rate);
+		}
 	}
 
 	int						ret;
@@ -278,18 +305,6 @@ int main(int argc, char* argv[])
 		cerr << "Warning, add & use \"uniform vec2 coord_offset;\" in your fullscreen fragment shader.\n";
 	}
 
-	const render_info& ri = opts.rinfo;
-
-	if(opts.is_draw_particles)
-	{
-		GL_CALL(glUseProgram(r.get_particle_program()));
-		const GLint loc = glGetUniformLocation(r.get_particle_program(), "viewport_scale");
-		if(loc == -1)
-		{
-			cerr << "Warning, add & use \"uniform vec2 viewport_scale;\" in your particle vertex shader.\n";
-		}
-		glUniform2f(loc, (float)ri.num_tile_x, (float)ri.num_tile_y);
-	}
 	const GLint viewport_offset_loc = 
 		opts.is_draw_particles ?
 		[&](){
@@ -304,6 +319,7 @@ int main(int argc, char* argv[])
 		:
 		-1;
 
+	const render_info& ri = opts.rinfo;
 
 //	frame_buffer_object fbo
 	frame_buffer_object_with_texture fbo
@@ -337,7 +353,12 @@ int main(int argc, char* argv[])
 			GL_CALL(glUseProgram(r.get_particle_program()));
 			if(viewport_offset_loc != -1)
 			{
-				glUniform2f(viewport_offset_loc, (float)i, (float)j);
+				glUniform2f
+				(
+					viewport_offset_loc,
+					(float)((int)ri.num_tile_x-(int)i*2-1),
+					(float)((int)ri.num_tile_y-(int)j*2-1)
+				);
 			}
 			GL_CALL(glDrawArrays(GL_POINTS, 0, 3));
 		}
