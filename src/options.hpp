@@ -61,6 +61,7 @@ struct options
 	std::string particle_vert_source_file;
 	std::string particle_frag_source_file;
 	std::string output_file;
+	GLsizei		num_particles;
 	render_info	rinfo;
 };
 

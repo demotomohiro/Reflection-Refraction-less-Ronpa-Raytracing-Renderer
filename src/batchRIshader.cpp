@@ -360,7 +360,7 @@ int main(int argc, char* argv[])
 					(float)((int)ri.num_tile_y-(int)j*2-1)
 				);
 			}
-			GL_CALL(glDrawArrays(GL_POINTS, 0, 3));
+			GL_CALL(glDrawArrays(GL_POINTS, 0, opts.num_particles));
 		}
 
 		glGenerateMipmap(GL_TEXTURE_2D);

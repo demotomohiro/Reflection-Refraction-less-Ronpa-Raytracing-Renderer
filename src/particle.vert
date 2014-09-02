@@ -52,8 +52,9 @@ void main()
 		pointsize = ZNEAR_H*0.5;
 	}else
 	{
-		gl_Position = vec4(-0.00025, -0.00025, -ZNEAR*4.0, 1.0);
-		pointsize = ZNEAR_H;
+		float z = gl_VertexID * 0.001;
+		gl_Position = vec4(-0.0005, -0.0005, -ZNEAR*2.0-z, 1.0);
+		pointsize = ZNEAR_H*0.2;
 	}
 
 	gl_Position = pvm * gl_Position;
