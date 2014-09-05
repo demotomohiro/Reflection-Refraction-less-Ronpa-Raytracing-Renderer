@@ -350,6 +350,8 @@ int main(int argc, char* argv[])
 		GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 3));
 		if(opts.is_draw_particles)
 		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE);
 			GL_CALL(glUseProgram(r.get_particle_program()));
 			if(viewport_offset_loc != -1)
 			{
@@ -361,6 +363,7 @@ int main(int argc, char* argv[])
 				);
 			}
 			GL_CALL(glDrawArrays(GL_POINTS, 0, opts.num_particles));
+			glDisable(GL_BLEND);
 		}
 
 		glGenerateMipmap(GL_TEXTURE_2D);
