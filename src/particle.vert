@@ -61,13 +61,26 @@ void test_star()
 	output_star(star_pos, star_dim);
 }
 
+vec3 rand3(float p)
+{
+	const vec3 x = vec3(0.01, 0.013, 0.051);
+	const vec3 y = vec3(0.031, 0.027, 0.007);
+	const vec3 z = vec3(0.023, 0.0115, 0.0213);
+
+	return
+		vec3(
+			rand(fract(vec3(p)+vec3(x))), 
+			rand(fract(vec3(p)+vec3(y))), 
+			rand(fract(vec3(p)+vec3(z))));
+}
+
 void gen_star()
 {
 	float vid = gl_VertexID / 8000000.0;
-	float x= rand(vec3(vid)) - 0.5;
-//	float x= 0.5;
-	vec3 star_pos = vec3(x*ZNEAR_W, ZNEAR_H*0.25, -ZNEAR*1.0);
-	float star_dim = ZNEAR_H*0.5;
+	float size = ZFAR - ZNEAR;
+	vec3 centor = vec3(0.0, 0.0, -(ZFAR + ZNEAR)*0.5);
+	vec3 star_pos = (rand3(vid) - vec3(0.5)) * vec3(size) + centor;
+	float star_dim = ZNEAR_H*2.;
 	output_star(star_pos, star_dim);
 }
 
