@@ -6,12 +6,12 @@
     <LocalDebuggerCommandArguments>--output image.png --output_w 640  --output_h 480 --num_tile_x 5 --num_tile_y 3 --super_sampling_level 1 grid_fullscr.frag particle.vert particle.frag</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>test_frag_shader.frag</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)../src</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='レンダラ合宿|x64'">
-    <LocalDebuggerCommandArguments>--output_w 640 test_frag_shader.frag</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)../src</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
