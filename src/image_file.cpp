@@ -6,8 +6,6 @@
 
 using namespace std;
 
-#ifndef GASSYUKU
-
 #include <cstdio>
 #include <png.h>
 
@@ -72,7 +70,6 @@ bool write_png
 
 	return true;
 }
-#endif
 
 bool write_ppm
 (

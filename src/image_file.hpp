@@ -26,7 +26,7 @@ inline bool write_image
 	const unsigned char*	data
 )
 {
-#ifdef GASSYUKU
+#if 0
 	return write_ppm(width, height, filename, data);
 #else
 	return write_png(width, height, filename, data);
