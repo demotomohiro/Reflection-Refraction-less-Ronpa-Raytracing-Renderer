@@ -31,6 +31,6 @@ void main()
 	float centor = star(rad2);
     float sc = star_cross(p);
     float c = centor + sc;
-	out_color = vec4(c);
+	out_color = vary_color*vec4(c);
 }
 
