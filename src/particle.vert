@@ -1,5 +1,7 @@
 #version 430
 
+#include "noise.s"
+
 //1=1光年とする!
 
 //#define WIDTH	1920.0
@@ -59,6 +61,16 @@ void test_star()
 	output_star(star_pos, star_dim);
 }
 
+void gen_star()
+{
+	float vid = gl_VertexID / 8000000.0;
+	float x= rand(vec3(vid)) - 0.5;
+//	float x= 0.5;
+	vec3 star_pos = vec3(x*ZNEAR_W, ZNEAR_H*0.25, -ZNEAR*1.0);
+	float star_dim = ZNEAR_H*0.5;
+	output_star(star_pos, star_dim);
+}
+
 void main()
 {
 #if 0
@@ -74,6 +86,7 @@ void main()
 #endif
 //	gl_Position = vec4(0.00025, 0.00025, -gl_VertexID*0.0001-0.001, 1.0);
 
-	test_star();
+//	test_star();
+	gen_star();
 }
 
