@@ -18,7 +18,7 @@ options::options(int argc, char* argv[]):
 	particle_vert_source_file("particle.vert"),
 	particle_frag_source_file("particle.frag"),
 	output_file("0.png"),
-	num_particles(256000)
+	num_particles(4096000)
 {
 	//‚±‚±‚Å‚ÍOpenGL‚ÌŠÖ”‚ğŒÄ‚Ño‚µ‚Ä‚Í‚¢‚¯‚È‚¢.
 	try
