@@ -104,7 +104,7 @@ options::options(int argc, char* argv[]):
 	if(vm.count("num_particles"))
 	{
 		num_particles = vm["num_particles"].as<GLsizei>();
-		cout << "num_particles" << num_particles << '\n'; 
+		cout << "num_particles: " << num_particles << '\n'; 
 	}
 
 	if(rinfo.output_w % rinfo.num_tile_x != 0)
