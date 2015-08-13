@@ -16,6 +16,7 @@ uniform vec2 viewport_scale;
 uniform vec2 viewport_offset;
 uniform vec2 viewport_size;
 uniform float aspect_rate;
+uniform int	 vertexID_offset;
 
 mat4 projection =
 mat4
@@ -95,7 +96,7 @@ vec3 rand3(float p)
 
 void gen_star()
 {
-	float vid = gl_VertexID / 8000000.0;
+	float vid = (gl_VertexID + vertexID_offset) / 8000000.0;
 	float size = ZFAR - ZNEAR;
 	vec3 centor = vec3(0.0, 0.0, -(ZFAR + ZNEAR)*0.5);
 	vec3 star_pos = (rand3(vid) - vec3(0.5)) * vec3(size) + centor;

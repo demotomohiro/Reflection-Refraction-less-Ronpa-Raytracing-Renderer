@@ -18,7 +18,8 @@ options::options(int argc, char* argv[]):
 	particle_vert_source_file("particle.vert"),
 	particle_frag_source_file("particle.frag"),
 	output_file("0.png"),
-	num_particles(4096000)
+	num_particles(4096000),
+	num_div_particles(4)
 {
 	//Ç±Ç±Ç≈ÇÕOpenGLÇÃä÷êîÇåƒÇ—èoÇµÇƒÇÕÇ¢ÇØÇ»Ç¢.
 	try
@@ -36,6 +37,7 @@ options::options(int argc, char* argv[]):
 		("num_tile_y",	program_options::value<GLsizei>(),	"Number of tiles in y axis"			)
 		("super_sampling_level",	program_options::value<GLsizei>(), "super sampling level"	)
 		("num_particles",program_options::value<GLsizei>(), "Number of particles"				)
+		("num_div_particles", program_options::value<GLsizei>(), "Number of particles divide"	)
 	;
 
 	program_options::positional_options_description	p;
@@ -105,6 +107,12 @@ options::options(int argc, char* argv[]):
 	{
 		num_particles = vm["num_particles"].as<GLsizei>();
 		cout << "num_particles: " << num_particles << '\n'; 
+	}
+
+	if(vm.count("num_div_particles"))
+	{
+		num_div_particles = vm["num_div_particles"].as<GLsizei>();
+		cout << "num_div_particles: " << num_div_particles << '\n'; 
 	}
 
 	if(rinfo.output_w % rinfo.num_tile_x != 0)

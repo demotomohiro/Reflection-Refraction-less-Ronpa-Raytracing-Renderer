@@ -319,6 +319,20 @@ int main(int argc, char* argv[])
 		:
 		-1;
 
+	const GLint vertexID_offset_loc = 
+		opts.is_draw_particles ?
+		[&](){
+			GL_CALL(glUseProgram(r.get_particle_program()));
+			const GLint loc = glGetUniformLocation(r.get_particle_program(), "vertexID_offset");
+			if(loc == -1)
+			{
+				cerr << "Warning, add & use \"uniform int vertexID_offset;\" in your particle vertex shader.\n";
+			}
+			return loc;
+		}()
+		:
+		-1;
+
 	const render_info& ri = opts.rinfo;
 
 //	frame_buffer_object fbo
@@ -362,7 +376,18 @@ int main(int argc, char* argv[])
 					(float)((int)ri.num_tile_y-(int)j*2-1)
 				);
 			}
-			GL_CALL(glDrawArrays(GL_POINTS, 0, opts.num_particles));
+			const GLsizei num_particles_per_draw = opts.num_particles / opts.num_div_particles;
+			for(GLsizei k=0; k<opts.num_div_particles; ++k)
+			{
+				if(vertexID_offset_loc != -1)
+					glUniform1i
+					(
+						vertexID_offset_loc,
+						num_particles_per_draw*k
+					);
+				GL_CALL(glDrawArrays(GL_POINTS, 0, num_particles_per_draw));
+				glFinish();	//TDR‘Îô.
+			}
 			glDisable(GL_BLEND);
 		}
 
