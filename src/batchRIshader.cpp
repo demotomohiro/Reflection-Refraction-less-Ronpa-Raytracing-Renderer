@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <chrono>
 
 #pragma warning( pop )
 
@@ -282,6 +283,7 @@ private:
 int main(int argc, char* argv[])
 {
 	using namespace gl_util;
+	using namespace std::chrono;
 
 	options opts(argc, argv);
 	if(!opts.is_render)
@@ -349,6 +351,7 @@ int main(int argc, char* argv[])
 	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
 
 	cout << "Rendering ..." << endl;
+	const steady_clock::time_point render_begin = steady_clock::now();
 
 	const GLsizei tile_w = ri.get_tile_width();
 	const GLsizei tile_h = ri.get_tile_height();
@@ -406,7 +409,10 @@ int main(int argc, char* argv[])
 		);
 	}
 
-	cout << "Rendering completed" << endl;
+	const steady_clock::time_point render_end = steady_clock::now();
+	cout	<< "Rendering completed in "
+			<< duration_cast<duration<double>>(render_end - render_begin).count()
+			<< " seconds." << endl;
 	cout << "Writing to file" << endl;
 
 //	cout << color_buf[0] << endl;
@@ -415,6 +421,11 @@ int main(int argc, char* argv[])
 		cerr << "Failed to write file!\n";
 		return 1;
 	}
+
+	const steady_clock::time_point writing_end = steady_clock::now();
+	cout	<< "completed in "
+			<< duration_cast<duration<double>>(writing_end - render_end).count()
+			<< " seconds." << endl;
 
 	return 0;
 }
