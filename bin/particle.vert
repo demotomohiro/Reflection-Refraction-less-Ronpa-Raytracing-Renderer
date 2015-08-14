@@ -8,9 +8,8 @@
 //#define HEIGHT	1080.0
 #define ZNEAR	0.001
 #define ZFAR	1.0
-#define ZNEAR_H	0.0005
-//#define ZNEAR_W (ZNEAR_H*WIDTH/HEIGHT)
-#define ZNEAR_W (ZNEAR_H/aspect_rate)
+#define ZNEAR_W 0.001
+#define ZNEAR_H	(ZNEAR_W*aspect_rate)
 
 uniform vec2 viewport_scale;
 uniform vec2 viewport_offset;
@@ -97,9 +96,9 @@ vec3 rand3(float p)
 void gen_star()
 {
 	float vid = (gl_VertexID + vertexID_offset) / 8000000.0;
-	float size = ZFAR - ZNEAR;
-	vec3 centor = vec3(0.0, 0.0, -(ZFAR + ZNEAR)*0.5);
-	vec3 star_pos = (rand3(vid) - vec3(0.5)) * vec3(size) + centor;
+	vec3 centor = vec3(0.0, 0.0, -0.5);
+	vec3 star_pos = rand3(vid) - vec3(0.5) + centor;
+
 	float star_dim = ZNEAR_H*2.;
 	output_star(star_pos, star_dim);
 
