@@ -93,11 +93,83 @@ vec3 rand3(float p)
 			rand(fract(vec3(p)+vec3(z))));
 }
 
+vec3 star_pos_mod(vec3 pos)
+{
+	const float size = 10.0;
+
+	vec3 p = pos;
+	vec3 scaled		= p*vec3(size);
+#if 0
+	vec3 floored	= floor(scaled) / vec3(size);
+	vec3 fr			= fract(scaled);
+	if(fr.x > fr.y && fr.x > fr.z)
+	{
+		p.y = floored.y;
+		p.z = floored.z;
+	}else if(fr.y > fr.z)
+	{
+		p.x = floored.x;
+		p.z = floored.z;
+	}else
+	{
+		p.x = floored.x;
+		p.y = floored.y;
+	}
+#else
+	vec3 floored	= floor(scaled+vec3(0.5)) / vec3(size);
+	vec3 fr			= abs(fract(scaled) - vec3(0.5));
+	if(fr.z < fr.x && fr.z < fr.y)
+	{
+		p.x = floored.x;
+		p.y = floored.y;
+	}else if(fr.x < fr.y)
+	{
+		p.y = floored.y;
+		p.z = floored.z;
+	}else
+	{
+		p.z = floored.z;
+		p.x = floored.x;
+	}
+#endif
+
+	p.x -= p.y;
+	p.z -= p.x;
+	return mix(p, pos, 0.04);
+}
+
+vec3 star_pos_rand3(float vid)
+{
+	vec3 centor = vec3(0.0, 0.0, -0.5);
+	return rand3(vid) - vec3(0.5) + centor;
+}
+
+vec3 star_pos_rand2(float vid)
+{
+	vec2 uv = rand3(vid).yx;
+	float theta = uv.x * 17.0;
+
+#if 0
+//	return vec3(cos(theta), sin(theta), uv.y - 1.0)*vec2(0.45/(theta+8.0), 1.0).xxy;
+	float rad = 1.0/(theta+12.0)*12.0*0.14;
+//	float rad = 0.14;
+	vec3 spread = rand3(vid)*rad*0.1;
+//	return vec3(rad*cos(theta), sqrt(uv.y)*0.04-0.08, rad*sin(theta)-0.32) + spread;
+#else
+	float rad = 1.0/(theta+6.0)*6.0*0.07;
+	vec3 spread = rand3(vid)*rad*0.8;
+	float width = (uv.y*uv.y)*0.07;
+	rad += width * (1.0 - uv.x);
+	float height = -width * uv.x * uv.x * 2.0;
+	return vec3(rad*cos(theta), -0.07+theta*0.005+height, rad*sin(theta)-0.32) + spread;
+#endif
+}
+
 void gen_star()
 {
 	float vid = (gl_VertexID + vertexID_offset) / 8000000.0;
-	vec3 centor = vec3(0.0, 0.0, -0.5);
-	vec3 star_pos = rand3(vid) - vec3(0.5) + centor;
+	vec3 star_pos = vid < 0.5 ? star_pos_rand3(vid) : star_pos_rand2(vid);
+//	star_pos = star_pos_mod(star_pos);
 
 	float star_dim = ZNEAR_H*2.;
 	output_star(star_pos, star_dim);
