@@ -105,7 +105,9 @@ void gen_star()
 	float h = rand(vec3(vid+0.03));
 	float s = rand(vec3(vid+0.02))*0.6;
 	float v = rand(vec3(vid+0.01))*0.2 + 0.8;
-	vary_color = vec4(HSVtoRGB(h, s, v), 1.0);
+	float attenuation = min(1.0/dot(star_pos, star_pos), 1.0/(0.35*0.35));
+	vary_color = vec4(HSVtoRGB(h, s, v), attenuation);
+//	vary_color = vec4(HSVtoRGB(-star_pos.z, 1.0, 1.0), 1.0);
 }
 
 void main()

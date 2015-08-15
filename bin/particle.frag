@@ -18,7 +18,7 @@ float star_cross(vec2 p)
    	const float s = 1./8.;
 	vec2 a = pow(abs(p)*0.04, vec2(s));
 	float d = (1. - pow(a.x + a.y, 1./2.))*22.;
-	d = max(d, 0.);  
+	d = max(d, 0.);
     return d;
 }
 
@@ -30,7 +30,7 @@ void main()
 	float rad2 = dot(p, p);
 	float centor = star(rad2);
     float sc = star_cross(p);
-    float c = centor + sc;
+    float c = (centor + sc)*vary_color.w*0.075;
 	out_color = vary_color*vec4(c);
 }
 
