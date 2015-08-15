@@ -25,7 +25,7 @@ void APIENTRY gl_debug_callback(
 	GLenum source, GLenum type, GLuint id,
 	GLenum severity,
 	GLsizei length, const char *message,
-	GLvoid * /*userParam*/)
+	const GLvoid * /*userParam*/)
 {
 	(source);
 	(type);
@@ -95,6 +95,10 @@ void print_gl_info()
 	glGetIntegerv(GL_MAJOR_VERSION, &major_ver);
 	glGetIntegerv(GL_MINOR_VERSION, &minor_ver);
 	cout << "OpenGL version:" << major_ver << "." << minor_ver << endl;
+
+	GLfloat point_size_range[2];
+	glGetFloatv(GL_POINT_SIZE_RANGE, point_size_range); 
+	cout << "GL_POINT_SIZE_RANGE: " << point_size_range[0] << ", " << point_size_range[1] << endl;
 }
 
 const char* vert_shader_source =
