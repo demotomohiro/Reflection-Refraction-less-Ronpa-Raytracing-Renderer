@@ -17,6 +17,12 @@ uniform vec2 viewport_size;
 uniform float aspect_rate;
 uniform int	 vertexID_offset;
 
+
+#define ROTATE_X_MAT_INV(theta)	mat3(		\
+	1.0,	0.0,			0.0,			\
+	0.0,	cos(theta), 	sin(theta),		\
+	0.0, 	-sin(theta),	cos(theta))
+
 mat4 projection =
 mat4
 (
@@ -154,15 +160,18 @@ vec3 star_pos_rand2(float vid)
 	float rad = 1.0/(theta+12.0)*12.0*0.14;
 //	float rad = 0.14;
 	vec3 spread = rand3(vid)*rad*0.1;
-//	return vec3(rad*cos(theta), sqrt(uv.y)*0.04-0.08, rad*sin(theta)-0.32) + spread;
+	vec3 pos = vec3(rad*cos(theta), sqrt(uv.y)*0.04-0.08, rad*sin(theta)-0.32) + spread;
 #else
 	float rad = 1.0/(theta+6.0)*6.0*0.07;
-	vec3 spread = rand3(vid)*rad*0.8;
+	vec3 spread = rand3(vid)*rad*0.5;
 	float width = (uv.y*uv.y)*0.07;
 	rad += width * (1.0 - uv.x);
 	float height = -width * uv.x * uv.x * 2.0;
-	return vec3(rad*cos(theta), -0.07+theta*0.005+height, rad*sin(theta)-0.32) + spread;
+	vec3 center = vec3(0.0, 0.0, -0.32);
+	vec3 pos = vec3(rad*cos(theta), -0.07+theta*0.005+height, rad*sin(theta)) + center + spread;
 #endif
+
+	return ROTATE_X_MAT_INV(0.3) * (pos - center) + center;
 }
 
 void gen_star()
