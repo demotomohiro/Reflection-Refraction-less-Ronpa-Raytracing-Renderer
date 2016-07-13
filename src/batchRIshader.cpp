@@ -313,7 +313,7 @@ int main(int argc, char* argv[])
 
 	const GLint viewport_offset_loc = 
 		opts.is_draw_particles ?
-		[&](){
+		[&r](){
 			GL_CALL(glUseProgram(r.get_particle_program()));
 			const GLint loc = glGetUniformLocation(r.get_particle_program(), "viewport_offset");
 			if(loc == -1)
@@ -327,7 +327,7 @@ int main(int argc, char* argv[])
 
 	const GLint vertexID_offset_loc = 
 		opts.is_draw_particles ?
-		[&](){
+		[&r](){
 			GL_CALL(glUseProgram(r.get_particle_program()));
 			const GLint loc = glGetUniformLocation(r.get_particle_program(), "vertexID_offset");
 			if(loc == -1)
