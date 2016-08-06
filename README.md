@@ -9,4 +9,21 @@ Reflection/Refraction-less Ronpa Raytracing Renderer
 
 作者: Tomohiro
 
+## Requirement
+* OpenGL 4.3
+
+## Required libraries:
+* Boost(program_options wave)
+* GLEW
+* libpng
+
+## How to build
+git clone https://github.com/demotomohiro/Reflection-Refraction-less-Ronpa-Raytracing-Renderer.git
+mkdir build
+cd build
+cmake ../Reflection-Refraction-less-Ronpa-Raytracing-Renderer -G "Visual Studio 14 2015 Win64"
+
+Open build/batchRIshader.sln with Visual Studio and build it. 
+
+
 This software is released under the MIT License, see LICENSE.
