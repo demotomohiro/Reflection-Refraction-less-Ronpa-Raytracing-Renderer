@@ -1,5 +1,6 @@
 #version 430
 
+#include "HSV.s"
 #include "noise.s"
 
 //1=1光年とする!
@@ -35,25 +36,6 @@ mat4
 const mat4 pvm = projection;
 
 out vec4 vary_color;
-
-vec3 Hue( float hue )
-{
-	vec3 rgb = fract(hue + vec3(0.0,2.0/3.0,1.0/3.0));
-
-	rgb = abs(rgb*2.0-1.0);
-		
-	return clamp(rgb*3.0-1.0,0.0,1.0);
-}
-
-vec3 HSVtoRGB( vec3 hsv )
-{
-	return ((Hue(hsv.x)-1.0)*hsv.y+1.0) * hsv.z;
-}
-
-vec3 HSVtoRGB(float h, float s, float v)
-{
-	return HSVtoRGB(vec3(h, s, v));
-}
 
 void output_star(vec3 star_pos, float star_dim)
 {
@@ -186,7 +168,7 @@ void gen_star()
 	float h = rand(vec3(vid+0.03));
 	float s = rand(vec3(vid+0.02))*0.6;
 	float v = rand(vec3(vid+0.01))*0.2 + 0.8;
-	float attenuation = min(1.0/dot(star_pos, star_pos), 1.0/(0.35*0.35));
+	float attenuation = min(0.5/dot(star_pos, star_pos), 1.0/(0.35*0.35));
 	vary_color = vec4(HSVtoRGB(h, s, v), attenuation);
 //	vary_color = vec4(HSVtoRGB(-star_pos.z, 1.0, 1.0), 1.0);
 }
