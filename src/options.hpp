@@ -11,7 +11,7 @@ struct render_info
 	GLsizei num_tile_y;
 	GLsizei super_sampling_level;
 
-	render_info::render_info():
+	render_info():
 		output_w(1920*8),	output_h(1080*8),
 		num_tile_x(4),	num_tile_y(4),
 		super_sampling_level(1)

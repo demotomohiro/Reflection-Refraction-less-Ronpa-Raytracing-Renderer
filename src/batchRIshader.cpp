@@ -21,7 +21,7 @@ using namespace std;
 
 namespace
 {
-void APIENTRY gl_debug_callback(
+void GLEWAPIENTRY gl_debug_callback(
 	GLenum source, GLenum type, GLuint id,
 	GLenum severity,
 	GLsizei length, const char *message,

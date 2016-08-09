@@ -4,6 +4,8 @@
 
 #ifdef _WIN32
 #	include <tchar.h>
+#else
+#	include <cstring>
 #endif
 
 using namespace std;
@@ -479,7 +481,6 @@ bool glcontext::init
 		return false;
 	}
 
-	GL_ERROR_ASSERT;
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
