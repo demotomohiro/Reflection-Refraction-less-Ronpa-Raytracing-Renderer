@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <initializer_list>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Include Wave itself
@@ -50,7 +51,7 @@ namespace glsl
 //  conditional block which were not evaluated because the corresponding 
 //  condition was false. These tokens are commented out as well. 
 //
-inline std::string glsl_preprocessor(const std::string& source)
+inline std::string glsl_preprocessor(const std::string& source, std::initializer_list<std::string> include_paths)
 {
 	std::ostringstream out;
 	std::string instring = source;
@@ -91,6 +92,9 @@ boost::wave::util::file_position_type current_position;
 #else
 	ctx.set_language(boost::wave::enable_emit_line_directives(ctx.get_language(), false));
 #endif
+    for(const auto& inc : include_paths) {
+        ctx.add_include_path(inc.c_str());
+    }
 
     // analyze the input file, print out the preprocessed tokens
     context_type::iterator_type first = ctx.begin();
