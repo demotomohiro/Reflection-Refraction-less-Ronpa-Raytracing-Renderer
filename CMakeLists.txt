@@ -1,6 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
-set_property(GLOBAL PROPERTY CXX_STANDARD 14)
-set_property(GLOBAL PROPERTY CXX_STANDARD_REQUIRED ON)
+cmake_minimum_required(VERSION 3.0)
 project(batchRIshader)
 add_executable(batchRIshader
 src/batchRIshader.cpp
@@ -11,11 +9,15 @@ src/image_file.cpp
 src/options.cpp
 src/shader.cpp
 )
+set_target_properties(batchRIshader PROPERTIES CXX_STANDARD 14)
+set_target_properties(batchRIshader PROPERTIES CXX_STANDARD_REQUIRED ON)
 
-set(Boost_USE_STATIC_LIBS ON)
+if(MSVC)
+    set(Boost_USE_STATIC_LIBS ON)
+endif()
 find_package(Boost REQUIRED COMPONENTS program_options wave)
 include_directories(${Boost_INCLUDE_DIRS})
-target_link_libraries(batchRIshader Boost::program_options Boost::wave)
+target_link_libraries(batchRIshader ${BOOST_LIBRARIES})
 
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
