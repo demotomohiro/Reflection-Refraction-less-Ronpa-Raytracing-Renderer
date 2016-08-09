@@ -11,7 +11,7 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 #pragma warning( push )
-#pragma warning( disable: 4100 4245 4503 4512 4706 4996 )
+#pragma warning( disable: 4100 4245 4477 4503 4512 4706 4996 )
 #include <iostream>
 #include <string>
 #include <vector>
