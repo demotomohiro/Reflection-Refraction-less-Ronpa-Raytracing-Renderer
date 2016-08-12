@@ -29,7 +29,12 @@ GLuint gl_util::load_shader(GLenum type, const std::string& source, bool& status
 		<<
 		" shader ... ";
 
-	const string pp_source = tofu::glsl::glsl_preprocessor(source, {"../shaders/include", "."});
+	const string pp_source = tofu::glsl::glsl_preprocessor(source, status, {"../shaders/include", "."});
+    if(!status)
+    {
+        return 0;
+    }
+
 	GLuint shader = get_shader_obj(type, pp_source);
 	if(shader == 0)
 	{

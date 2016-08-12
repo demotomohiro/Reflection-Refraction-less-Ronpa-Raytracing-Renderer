@@ -51,13 +51,15 @@ namespace glsl
 //  conditional block which were not evaluated because the corresponding 
 //  condition was false. These tokens are commented out as well. 
 //
-inline std::string glsl_preprocessor(const std::string& source, std::initializer_list<std::string> include_paths)
+inline std::string glsl_preprocessor(const std::string& source, bool& status, std::initializer_list<std::string> include_paths)
 {
 	std::ostringstream out;
 	std::string instring = source;
 
-// current file position is saved for exception handling
-boost::wave::util::file_position_type current_position;
+    status = false;
+
+    // current file position is saved for exception handling
+    boost::wave::util::file_position_type current_position;
 
     try {
     //  The template boost::wave::cpplexer::lex_token<> is the token type to be 
@@ -76,57 +78,59 @@ boost::wave::util::file_position_type current_position;
                 custom_directives_hooks
             > context_type;
 
-    // The preprocessor iterator shouldn't be constructed directly. It is 
-    // to be generated through a wave::context<> object. This wave:context<> 
-    // object additionally may be used to initialize and define different 
-    // parameters of the actual preprocessing (not done here).
-    //
-    // The preprocessing of the input stream is done on the fly behind the 
-    // scenes during iteration over the context_type::iterator_type stream.
-    context_type ctx (instring.begin(), instring.end()/*, argv[1]*/);
+    //  The preprocessor iterator shouldn't be constructed directly. It is 
+    //  to be generated through a wave::context<> object. This wave:context<> 
+    //  object additionally may be used to initialize and define different 
+    //  parameters of the actual preprocessing (not done here).
+    //  
+    //  The preprocessing of the input stream is done on the fly behind the 
+    //  scenes during iteration over the context_type::iterator_type stream.
+        context_type ctx (instring.begin(), instring.end()/*, argv[1]*/);
 
-    ctx.set_language(boost::wave::enable_long_long(ctx.get_language()));
-    ctx.set_language(boost::wave::enable_preserve_comments(ctx.get_language()));
-    ctx.set_language(boost::wave::enable_prefer_pp_numbers(ctx.get_language()));
+        ctx.set_language(boost::wave::enable_long_long(ctx.get_language()));
+        ctx.set_language(boost::wave::enable_preserve_comments(ctx.get_language()));
+        ctx.set_language(boost::wave::enable_prefer_pp_numbers(ctx.get_language()));
 #if TOFU_OPENGL_GLSL_PREPROCESSOR_ENABLE_EMIT_LINE_DIRECTIVES
 #else
-	ctx.set_language(boost::wave::enable_emit_line_directives(ctx.get_language(), false));
+        ctx.set_language(boost::wave::enable_emit_line_directives(ctx.get_language(), false));
 #endif
-    for(const auto& inc : include_paths) {
-        ctx.add_include_path(inc.c_str());
-    }
+        for(const auto& inc : include_paths) {
+            ctx.add_include_path(inc.c_str());
+        }
 
-    // analyze the input file, print out the preprocessed tokens
-    context_type::iterator_type first = ctx.begin();
-    context_type::iterator_type last = ctx.end();
+    //  analyze the input file, print out the preprocessed tokens
+        context_type::iterator_type first = ctx.begin();
+        context_type::iterator_type last = ctx.end();
 
         while (first != last) {
             current_position = (*first).get_position();
             out << (*first).get_value();
             ++first;
         }
-    }
-    catch (boost::wave::cpp_exception const& e) {
+    } catch (boost::wave::cpp_exception const& e) {
     // some preprocessing error
         std::cerr 
             << e.file_name() << "(" << e.line_no() << "): "
             << e.description() << std::endl;
-    }
-    catch (std::exception const& e) {
+        return std::string();
+    } catch (std::exception const& e) {
     // use last recognized token to retrieve the error position
         std::cerr 
             << current_position.get_file() 
             << "(" << current_position.get_line() << "): "
             << "exception caught: " << e.what()
             << std::endl;
-    }
-    catch (...) {
+        return std::string();
+    } catch (...) {
     // use last recognized token to retrieve the error position
         std::cerr 
             << current_position.get_file() 
             << "(" << current_position.get_line() << "): "
             << "unexpected exception caught." << std::endl;
+        return std::string();
     }
+
+    status = true;
 
     return out.str();
 }
