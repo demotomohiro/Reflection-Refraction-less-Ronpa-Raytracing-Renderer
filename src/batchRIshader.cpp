@@ -131,8 +131,16 @@ struct renderer
 
 		print_gl_info();
 		init_gl();
-		init_fullscreen_program(opts);
-		init_particle_program(opts);
+		if(!init_fullscreen_program(opts))
+        {
+            cerr << "Failed to initialize fullscreen program\n";
+            return;
+        }
+		if(!init_particle_program(opts))
+        {
+            cerr << "Failed to initialize particle program\n";
+            return;
+        }
 
 		GLuint vao;
 		glGenVertexArrays(1, &vao);
@@ -170,7 +178,7 @@ struct renderer
 
 private:
 
-	void	init_fullscreen_program(const options& opts)
+	bool	init_fullscreen_program(const options& opts)
 	{
 		using namespace gl_util;
 
@@ -178,7 +186,7 @@ private:
 		scoped_shader vert_shader(load_shader(GL_VERTEX_SHADER, vert_shader_source, status));
 		if(!status)
 		{
-			return ;
+			return false;
 		}
 
 		scoped_shader frag_shader(
@@ -186,13 +194,13 @@ private:
 				GL_FRAGMENT_SHADER, opts.source_file, status));
 		if(!status)
 		{
-			return;
+			return false;
 		}
 
 		program = link_program(vert_shader, frag_shader, status);
 		if(!status)
 		{
-			return;
+			return false;
 		}
 
 		glUseProgram(program);
@@ -209,15 +217,17 @@ private:
 			const float res[] = {(float)ri.output_w*spr_smpl_w, (float)ri.output_h*spr_smpl_w};
 			glUniform2fv(loc, 1, res);
 		}
+
+        return true;
 	}
 
-	void	init_particle_program(const options& opts)
+	bool	init_particle_program(const options& opts)
 	{
 		using namespace gl_util;
 
 		if(!opts.is_draw_particles)
 		{
-			return;
+			return true;
 		}
 
 		bool status;
@@ -226,7 +236,7 @@ private:
 				GL_VERTEX_SHADER, opts.particle_vert_source_file, status));
 		if(!status)
 		{
-			return ;
+			return false;
 		}
 
 		scoped_shader frag_shader(
@@ -234,13 +244,13 @@ private:
 				GL_FRAGMENT_SHADER, opts.particle_frag_source_file, status));
 		if(!status)
 		{
-			return;
+			return false;
 		}
 
 		particle_program = link_program(vert_shader, frag_shader, status);
 		if(!status)
 		{
-			return;
+			return false;
 		}
 
 		glUseProgram(particle_program);
@@ -272,6 +282,8 @@ private:
 			const GLfloat aspect_rate = (GLfloat)ri.output_h/(GLfloat)ri.output_w;
 			glUniform1f(loc, aspect_rate);
 		}
+
+        return true;
 	}
 
 	int						ret;
