@@ -1,5 +1,6 @@
 Reflection/Refraction-less Ronpa Raytracing Renderer
 ===========
+OpenGL offline renderer.
 レイトレ合宿3!!!で公開したレンダラ.
 
 [レンダリング結果画像(サイズ:15360x8640)](https://drive.google.com/file/d/0B7G5goy1SEP2S2RwSG51SVlYZ0U/view?usp=sharing)
@@ -18,10 +19,12 @@ Reflection/Refraction-less Ronpa Raytracing Renderer
 * libpng
 
 ## How to build
+```console
 git clone https://github.com/demotomohiro/Reflection-Refraction-less-Ronpa-Raytracing-Renderer.git
 mkdir build
 cd build
 cmake ../Reflection-Refraction-less-Ronpa-Raytracing-Renderer -G "Visual Studio 14 2015 Win64"
+```
 
 Open build/batchRIshader.sln with Visual Studio and build it. 
 
