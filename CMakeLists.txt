@@ -59,3 +59,9 @@ add_test(
     COMMAND batchRIshader --output ${CMAKE_BINARY_DIR}/test_frag_shader.png --output_w 1920 --output_h 1080 test_frag_shader.frag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
+
+add_test(
+    NAME random_dots
+    COMMAND batchRIshader --num_particles 4096 --super_sampling_level 0 --output ${CMAKE_BINARY_DIR}/random_dots.png --output_w 512 --output_h 512 grid_fullscr.frag random_dots.vert vary_color.frag
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
+    )
