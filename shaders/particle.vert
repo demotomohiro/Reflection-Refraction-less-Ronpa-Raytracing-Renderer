@@ -1,5 +1,6 @@
 #version 430
 
+#include "particle.s"
 #include "HSV.s"
 #include "noise.s"
 
@@ -12,11 +13,7 @@
 #define ZNEAR_W 0.001
 #define ZNEAR_H	(ZNEAR_W*aspect_rate)
 
-uniform vec2 viewport_scale;
-uniform vec2 viewport_offset;
-uniform vec2 viewport_size;
 uniform float aspect_rate;
-uniform int	 vertexID_offset;
 
 
 #define ROTATE_X_MAT_INV(theta)	mat3(		\
@@ -39,11 +36,8 @@ out vec4 vary_color;
 
 void output_star(vec3 star_pos, float star_dim)
 {
-	gl_Position = pvm * vec4(star_pos, 1.);
-	gl_Position.xy = gl_Position.xy * viewport_scale + viewport_offset*gl_Position.w;
-
-	float ps = pvm[0][0] * star_dim * viewport_scale.x;
-	gl_PointSize = viewport_size.x*0.5*ps / gl_Position.w;
+    brOutputPosition(star_pos, pvm);
+    brOutputPointSize(star_dim, pvm);
 }
 
 void test_star()
@@ -158,7 +152,7 @@ vec3 star_pos_rand2(float vid)
 
 void gen_star()
 {
-	float vid = (gl_VertexID + vertexID_offset) / 8000000.0;
+	float vid = brGetVertexID() / 8000000.0;
 	vec3 star_pos = vid < 0.5 ? star_pos_rand3(vid) : star_pos_rand2(vid);
 //	star_pos = star_pos_mod(star_pos);
 
