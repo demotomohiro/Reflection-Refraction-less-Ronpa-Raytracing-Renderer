@@ -361,7 +361,7 @@ int main(int argc, char* argv[])
 
 	if(!fbo.get_is_success())
 	{
-		return false;
+		return 1;
 	}
 
 	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
