@@ -68,3 +68,25 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 endforeach(i)
+
+math(EXPR width "1920")
+math(EXPR height "1080")
+foreach(i RANGE 4)
+    math(EXPR n "65536 << (${i}+8)")
+add_test(
+    NAME particle_simple${n}
+    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/particle_simple${n}.png --output_w ${width} --output_h ${height} main_shader.frag particle_simple.vert particle.frag
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
+    )
+endforeach(i)
+
+#math(EXPR n "65536 << 12")
+#foreach(i RANGE 2)
+#    math(EXPR width "1920*(1<<${i})")
+#    math(EXPR height "1080*(1<<${i})")
+#add_test(
+#    NAME particle_simple${n}_${width}x${height}
+#    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 1 --num_tile_x 16 --num_tile_y 16 --output ${CMAKE_BINARY_DIR}/particle_simple${n}_${width}x${height}.png --output_w ${width} --output_h ${height} main_shader.frag particle_simple.vert particle.frag
+#    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
+#    )
+#endforeach(i)
