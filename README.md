@@ -7,8 +7,14 @@ OpenGL offline renderer.
 
 [3840x2160に縮小した画像](http://demotomohiro.github.io/pic/render2015_4k.png)
 
+by Tomohiro
 
-作者: Tomohiro
+This is offline OpenGL renderer designed to execute heavy shader which might take more then 1 second to complete.
+It is also designed to render large size image like 30720x17280 pixels by dividing a image into multiple tiles and render to each tile.
+It supports fragment shader which is executed for every pixels on a image and vertex/fragment shaders to render particles.
+
+## Sample images:
+Random 268435456 particles: [30720x17280 741MB](https://drive.google.com/file/d/0B7G5goy1SEP2T0U4dFFYVmRNTGs/view?usp=sharing), [3840x2160](http://demotomohiro.github.io/pic/render2016_4k.png)
 
 ## Requirement
 * OpenGL 4.3
