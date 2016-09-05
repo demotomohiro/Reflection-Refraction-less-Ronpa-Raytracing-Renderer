@@ -13,7 +13,7 @@ using namespace std;
 options::options(int argc, char* argv[]):
 	is_render(false),
 	is_draw_particles(false),
-	ret_code(0),
+	ret_code(1),
 	source_file("../shaders/main_shader.frag"),
 	particle_vert_source_file("../shaders/particle.vert"),
 	particle_frag_source_file("../shaders/particle.frag"),
