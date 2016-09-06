@@ -44,7 +44,7 @@ endif()
 enable_testing()
 add_test(
     NAME grid_test
-    COMMAND batchRIshader --num_particles 256000 --output ${CMAKE_BINARY_DIR}/grid_image.png --output_w 1920  --output_h 1080 --num_tile_x 2 --num_tile_y 2 --super_sampling_level 1 grid_fullscr.frag particle.vert particle.frag
+    COMMAND batchRIshader --num_particles 256000 --output ${CMAKE_BINARY_DIR}/grid_image.png --output_w 1920  --output_h 1080 --num_tile_x 2 --num_tile_y 2 --super_sampling_level 1 grid_fullscr.frag particle_star.vert particle_star.frag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 
@@ -75,7 +75,7 @@ foreach(i RANGE 1)
     math(EXPR n "65536 << (${i}+8)")
 add_test(
     NAME particle_simple${n}
-    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/particle_simple${n}.png --output_w ${width} --output_h ${height} main_shader.frag particle_simple.vert particle.frag
+    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/particle_simple${n}.png --output_w ${width} --output_h ${height} main_shader.frag particle_simple.vert particle_star.frag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 endforeach(i)
@@ -97,6 +97,6 @@ math(EXPR height "1080")
 set(test_name particle_DF_${n})
 add_test(
     NAME ${test_name}
-    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/${test_name}.png --output_w ${width} --output_h ${height} main_shader.frag particle_DF.vert particle.frag
+    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/${test_name}.png --output_w ${width} --output_h ${height} main_shader.frag particle_DF.vert particle_star.frag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )

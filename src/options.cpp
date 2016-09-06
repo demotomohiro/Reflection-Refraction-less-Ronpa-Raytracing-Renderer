@@ -15,8 +15,8 @@ options::options(int argc, char* argv[]):
 	is_draw_particles(false),
 	ret_code(1),
 	source_file("../shaders/main_shader.frag"),
-	particle_vert_source_file("../shaders/particle.vert"),
-	particle_frag_source_file("../shaders/particle.frag"),
+	particle_vert_source_file("../shaders/particle_star.vert"),
+	particle_frag_source_file("../shaders/particle_star.frag"),
 	output_file("0.png"),
 	num_particles(4096000),
 	num_div_particles(4)
