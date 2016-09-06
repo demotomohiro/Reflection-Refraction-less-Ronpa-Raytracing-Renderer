@@ -60,7 +60,7 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 
-foreach(i RANGE 3)
+foreach(i RANGE 1)
     math(EXPR n "65536 << ${i}")
 add_test(
     NAME random_dots${n}
@@ -71,7 +71,7 @@ endforeach(i)
 
 math(EXPR width "1920")
 math(EXPR height "1080")
-foreach(i RANGE 4)
+foreach(i RANGE 1)
     math(EXPR n "65536 << (${i}+8)")
 add_test(
     NAME particle_simple${n}
@@ -90,3 +90,13 @@ endforeach(i)
 #    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
 #    )
 #endforeach(i)
+
+math(EXPR n "65536 << (6)")
+math(EXPR width "1920")
+math(EXPR height "1080")
+set(test_name particle_DF_${n})
+add_test(
+    NAME ${test_name}
+    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/${test_name}.png --output_w ${width} --output_h ${height} main_shader.frag particle_DF.vert particle.frag
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
+    )
