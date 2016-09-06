@@ -13,7 +13,7 @@
 #define TOFU_OPENGL_GLSL_PREPROCESSOR_ENABLE_EMIT_LINE_DIRECTIVES 1
 #include "glsl_preprocessor.hpp"
 
-GLuint gl_util::load_shader(GLenum type, const std::string& source, bool& status)
+GLuint gl_util::load_shader(GLenum type, const std::string& source, const std::vector<std::string>& macro_definitions, bool& status)
 {
 	using namespace gl_util;
 	using namespace std;
@@ -29,7 +29,7 @@ GLuint gl_util::load_shader(GLenum type, const std::string& source, bool& status
 		<<
 		" shader ... ";
 
-	const string pp_source = tofu::glsl::glsl_preprocessor(source, status, {"../shaders/include", "."});
+	const string pp_source = tofu::glsl::glsl_preprocessor(source, status, {"../shaders/include", "."}, macro_definitions);
     if(!status)
     {
         return 0;
@@ -54,7 +54,7 @@ GLuint gl_util::load_shader(GLenum type, const std::string& source, bool& status
 	return shader;
 }
 
-GLuint gl_util::load_shader_from_file(GLenum type, const std::string& file, bool& status)
+GLuint gl_util::load_shader_from_file(GLenum type, const std::string& file, const std::vector<std::string>& macro_definitions, bool& status)
 {
 	using namespace std;
 
@@ -71,7 +71,7 @@ GLuint gl_util::load_shader_from_file(GLenum type, const std::string& file, bool
 		std::istreambuf_iterator<char>(ifs.rdbuf()),
 		std::istreambuf_iterator<char>());
 
-	return gl_util::load_shader(type, source, status);
+	return gl_util::load_shader(type, source, macro_definitions, status);
 }
 
 GLuint gl_util::link_program(GLuint vert_shader, GLuint frag_shader, bool& status)

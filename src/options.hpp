@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <string>
 #include "gl_common.hpp"
 
@@ -61,6 +62,7 @@ struct options
 	std::string particle_vert_source_file;
 	std::string particle_frag_source_file;
 	std::string output_file;
+    std::vector<std::string>    macro_definitions;
 	GLsizei		num_particles;
 	GLsizei		num_div_particles;
 	render_info	rinfo;

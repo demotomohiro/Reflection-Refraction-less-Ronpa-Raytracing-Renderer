@@ -51,7 +51,7 @@ namespace glsl
 //  conditional block which were not evaluated because the corresponding 
 //  condition was false. These tokens are commented out as well. 
 //
-inline std::string glsl_preprocessor(const std::string& source, bool& status, std::initializer_list<std::string> include_paths)
+inline std::string glsl_preprocessor(const std::string& source, bool& status, std::initializer_list<std::string> include_paths, const std::vector<std::string>& macro_definitions)
 {
 	std::ostringstream out;
 	std::string instring = source;
@@ -96,6 +96,10 @@ inline std::string glsl_preprocessor(const std::string& source, bool& status, st
 #endif
         for(const auto& inc : include_paths) {
             ctx.add_include_path(inc.c_str());
+        }
+
+        for(const auto& def : macro_definitions) {
+            ctx.add_macro_definition(def);
         }
 
     //  analyze the input file, print out the preprocessed tokens

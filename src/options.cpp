@@ -38,6 +38,7 @@ options::options(int argc, char* argv[]):
 		("super_sampling_level",	program_options::value<GLsizei>(), "super sampling level"	)
 		("num_particles",program_options::value<GLsizei>(), "Number of particles"				)
 		("num_div_particles", program_options::value<GLsizei>(), "Number of particles divide"	)
+        ("define,D",    program_options::value< vector<string> >(),   "Define macro used in shader sources")
 	;
 
 	program_options::positional_options_description	p;
@@ -114,6 +115,18 @@ options::options(int argc, char* argv[]):
 		num_div_particles = vm["num_div_particles"].as<GLsizei>();
 		cout << "num_div_particles: " << num_div_particles << '\n'; 
 	}
+
+    if(vm.count("define"))
+    {
+        macro_definitions = vm["define"].as< vector<string> >();
+#if 0
+        cout << "define: " << '\n';
+        for(const string& d : defines)
+        {
+            cout << d << '\n';
+        }
+#endif
+    }
 
 	if(rinfo.output_w % rinfo.num_tile_x != 0)
 	{

@@ -183,7 +183,7 @@ private:
 		using namespace gl_util;
 
 		bool status;
-		scoped_shader vert_shader(load_shader(GL_VERTEX_SHADER, vert_shader_source, status));
+		scoped_shader vert_shader(load_shader(GL_VERTEX_SHADER, vert_shader_source, opts.macro_definitions, status));
 		if(!status)
 		{
 			return false;
@@ -191,7 +191,7 @@ private:
 
 		scoped_shader frag_shader(
 			load_shader_from_file(
-				GL_FRAGMENT_SHADER, opts.source_file, status));
+				GL_FRAGMENT_SHADER, opts.source_file, opts.macro_definitions, status));
 		if(!status)
 		{
 			return false;
@@ -233,7 +233,7 @@ private:
 		bool status;
 		scoped_shader vert_shader(
 			load_shader_from_file(
-				GL_VERTEX_SHADER, opts.particle_vert_source_file, status));
+				GL_VERTEX_SHADER, opts.particle_vert_source_file, opts.macro_definitions, status));
 		if(!status)
 		{
 			return false;
@@ -241,7 +241,7 @@ private:
 
 		scoped_shader frag_shader(
 			load_shader_from_file(
-				GL_FRAGMENT_SHADER, opts.particle_frag_source_file, status));
+				GL_FRAGMENT_SHADER, opts.particle_frag_source_file, opts.macro_definitions, status));
 		if(!status)
 		{
 			return false;
