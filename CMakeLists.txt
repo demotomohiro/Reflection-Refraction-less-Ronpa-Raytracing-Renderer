@@ -60,7 +60,7 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 
-foreach(i RANGE 1)
+foreach(i RANGE 0)
     math(EXPR n "65536 << ${i}")
 add_test(
     NAME random_dots${n}
@@ -71,7 +71,7 @@ endforeach(i)
 
 math(EXPR width "1920")
 math(EXPR height "1080")
-foreach(i RANGE 1)
+foreach(i RANGE 0)
     math(EXPR n "65536 << (${i}+8)")
 add_test(
     NAME particle_simple${n}
@@ -91,12 +91,16 @@ endforeach(i)
 #    )
 #endforeach(i)
 
-math(EXPR n "65536 << (6)")
+math(EXPR n "65536 << (8)")
 math(EXPR width "1920")
 math(EXPR height "1080")
-set(test_name particle_DF_${n})
+math(EXPR iter "64")
+foreach(i RANGE 32)
+math(EXPR rot "${i}")
+set(test_name particle_DF_${n}_iter${iter}_rot${rot})
 add_test(
     NAME ${test_name}
-    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/${test_name}.png --output_w ${width} --output_h ${height} main_shader.frag particle_DF.vert particle_star.frag
+    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --output ${CMAKE_BINARY_DIR}/${test_name}.png --output_w ${width} --output_h ${height} "-DROT_THETA=(${rot}/32.0*3.141*0.25)" "-DNUM_ITER=${iter}" main_shader.frag particle_DF.vert particle_DF.frag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
+endforeach(i)
