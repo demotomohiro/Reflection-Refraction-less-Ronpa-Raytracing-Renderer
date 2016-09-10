@@ -99,7 +99,7 @@ math(EXPR rot "${i}")
 set(test_name particle_DF_${n}_rot${rot})
 add_test(
     NAME ${test_name}
-    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --num_tile_x 1 --num_tile_y 1 --output ${CMAKE_BINARY_DIR}/${test_name}.png --output_w ${width} --output_h ${height} "-DROT_THETA=(${rot}/32.0*3.141)" "-DBRIGHTNESS=(1.0/float(1<<(0)))" main_shader.frag particle_DF.vert particle_DF.frag
+    COMMAND batchRIshader --num_particles ${n} --super_sampling_level 2 --num_tile_x 1 --num_tile_y 1 --output ${CMAKE_BINARY_DIR}/${test_name}.png --output_w ${width} --output_h ${height} "-DROT_THETA=(${rot}/32.0*3.141)" main_shader.frag particle_DF.vert particle_DF.frag
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 endforeach(i)

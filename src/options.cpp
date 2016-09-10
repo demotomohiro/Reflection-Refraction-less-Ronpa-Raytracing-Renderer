@@ -170,6 +170,9 @@ options::options(int argc, char* argv[]):
 	if(!particle_vert_source_file.empty() && !particle_frag_source_file.empty())
 	{
 		is_draw_particles = true;
+        const string num_particles_str = to_string(num_particles);
+        macro_definitions.emplace_back("BR_NUM_PARTICLES=" + num_particles_str);
+        macro_definitions.emplace_back("BR_NUM_PARTICLESF=" + num_particles_str + ".");
 	}
 
 	}catch(std::exception& e)

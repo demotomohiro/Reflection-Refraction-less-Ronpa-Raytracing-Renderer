@@ -134,7 +134,8 @@ void gen_star()
     star_pos = ROTATE_Y_MAT(ROT_THETA) * star_pos;
     star_pos -= vec3(0.0, 0.0, 0.5);
 
-	float star_dim = ZNEAR_H*sqrt(BRIGHTNESS);
+    //Keep brightness constant after chaning a number of particles.
+	float star_dim = ZNEAR_H*inversesqrt(float(BR_NUM_PARTICLES/(65536<<8)));
 	output_star(star_pos, star_dim);
 
 	vary_color = vec4(abs(normal)*0.04, 0.05);
