@@ -21,6 +21,10 @@
 #define ROT_THETA 0.0
 #endif
 
+#ifndef SCAT_DAMP
+#define SCAT_DAMP 0.9
+#endif
+
 uniform float aspect_rate;
 mat4 projection =
 mat4
@@ -108,7 +112,7 @@ void gen_star()
         vec3 scatter = uintToFloat(Philox4x32(uvec4(vid, i, 13, 17), uvec2(63429, 52632))).xyz;
         vec3 norm_scatter = (scatter*2.0 - vec3(1.0));
         float scat_radius = distance0;
-        distance0 *= 0.75;
+        distance0 *= SCAT_DAMP;
         star_pos += norm_scatter * scat_radius;
     }
 
@@ -130,7 +134,7 @@ void gen_star()
     star_pos = ROTATE_Y_MAT(ROT_THETA) * star_pos;
     star_pos -= vec3(0.0, 0.0, 0.5);
 
-	float star_dim = ZNEAR_H;
+	float star_dim = ZNEAR_H*sqrt(BRIGHTNESS);
 	output_star(star_pos, star_dim);
 
 	vary_color = vec4(abs(normal)*0.04, 0.05);
