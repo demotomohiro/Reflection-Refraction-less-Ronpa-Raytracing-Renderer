@@ -168,6 +168,7 @@ bool glcontext::init
 		WGL_CONTEXT_MAJOR_VERSION_ARB, gl_req_major_ver,
 		WGL_CONTEXT_MINOR_VERSION_ARB, gl_req_minor_ver,
 		WGL_CONTEXT_FLAGS_ARB,
+        WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB |
 #ifdef NDEBUG
 		0
 #else
