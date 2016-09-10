@@ -12,7 +12,7 @@
 #	error Not yet implemented.
 #endif
 
-#ifdef _DEBUG
+#ifdef NDEBUG
 #	undef GLEW_GET_FUN
 #	define GLEW_GET_FUN(x)	(set_last_gl_call(__FILE__, __LINE__, #x), x)
 #	define GL_CALL(x)		(set_last_gl_call(__FILE__, __LINE__, #x), x)
@@ -22,9 +22,9 @@
 
 struct gl_call_info
 {
-	const	char*	filename;
-			int		line;
-	const	char*	funcname;
+	const	char*	filename = nullptr;
+			int		line     = 0;
+	const	char*	funcname = nullptr;
 
 	void set(const char* filename, int line, const char* funcname)
 	{

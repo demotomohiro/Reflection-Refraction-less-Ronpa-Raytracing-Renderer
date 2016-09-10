@@ -425,7 +425,15 @@ bool glcontext::init
 		{
 			GLX_CONTEXT_MAJOR_VERSION_ARB, gl_req_major_ver,
 			GLX_CONTEXT_MINOR_VERSION_ARB, gl_req_minor_ver,
-			//GLX_CONTEXT_FLAGS_ARB        , GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+			GLX_CONTEXT_FLAGS_ARB        ,
+            GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB | 
+#ifdef NDEBUG
+            0
+#else
+            GLX_CONTEXT_DEBUG_BIT_ARB
+#endif
+            ,
+            GLX_CONTEXT_PROFILE_MASK_ARB , GLX_CONTEXT_CORE_PROFILE_BIT_ARB, 
 			None
 		};
 
