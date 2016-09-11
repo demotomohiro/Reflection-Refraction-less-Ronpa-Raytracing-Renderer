@@ -135,7 +135,7 @@ void gen_star()
     star_pos -= vec3(0.0, 0.0, 0.5);
 
     //Keep brightness constant after chaning a number of particles.
-	float star_dim = ZNEAR_H*inversesqrt(float(BR_NUM_PARTICLES/(65536<<8)));
+	float star_dim = ZNEAR_H*inversesqrt(BR_NUM_PARTICLESF/float(65536<<8));
 	output_star(star_pos, star_dim);
 
 	vary_color = vec4(abs(normal)*0.04, 0.05);
