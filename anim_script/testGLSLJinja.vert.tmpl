@@ -1,0 +1,68 @@
+#version 430
+
+#include "particle.s"
+
+{% from "tmplFunc.tmpl" import defTmplFunc with context %}
+
+uniform float aspect_rate;
+
+//Parallel projection (-1, -1, -1)~(1, 1, 1)
+mat4 projection =
+mat4
+(
+	1.0,        0.0,	    0.0,		0.0,
+	0.0,		1.0,	    0.0,		0.0,
+	0.0,		0.0,		-1.0,		0.0,
+	0.0,		0.0,		0.0,	    1.0
+);
+
+const mat4 pvm = projection;
+
+out vec4 vary_color;
+
+vec2 move(vec2 pos, float time)
+{
+    float theta = time;
+    vec2 v0 = vec2(cos(theta), sin(theta));
+    vec2 v1 = vec2(-v0.y, v0.x);
+    return v0 * pos.x + v1 * pos.y;
+}
+
+vec2 sinmove(vec2 pos, float time)
+{
+    return vec2(pos.x, pos.y + sin(time*8.0)*0.5);
+}
+
+{% call(realFuncName, F) defTmplFunc("dxdt", "F") %}
+vec2 `realFuncName`(vec2 p, float time)
+{
+    const float dt = 0.01;
+    return (`F`(p, time + dt) - `F`(p, time))/dt;
+}
+{% endcall %}
+
+void main()
+{
+    const float width = 256.0;
+
+    int vid = brGetVertexID();
+
+    const int len = 31;
+    const float lenf = 31.0;
+    vec3 p = vec3(float(vid & len) / lenf, float((vid/(len+1)) & len) / lenf, 0.0);
+    vec2 vel;
+    if(vid > BR_NUM_PARTICLES / 2)
+    {
+        p.xy = move(p.xy, `time`);
+        vel = `tfcall("dxdt", "move")`(p.xy, `time`);
+    }else
+    {
+        p.xy = sinmove(p.xy, `time`);
+        vel = `tfcall("dxdt", "sinmove")`(p.xy, `time`);
+    }
+    brOutputPosition(p, pvm);
+    brOutputPointSize(1.0/width + length(vel)*0.01, pvm);
+
+    vary_color = vec4(vec3(1.0), 1.0);
+}
+

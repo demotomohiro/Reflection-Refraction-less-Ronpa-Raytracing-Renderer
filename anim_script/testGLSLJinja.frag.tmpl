@@ -1,0 +1,47 @@
+#version 430
+
+out vec3 out_color;
+
+uniform vec2 coord_offset;
+uniform vec2 resolution;
+
+{% from "tmplFunc.tmpl" import defTmplFunc with context %}
+
+float sin2(vec2 p)
+{
+    return (sin(p.x)*sin(p.y) + 1.0)*0.5;
+}
+
+vec3 xor(vec2 p)
+{
+    uvec2 u = uvec2(p);
+    uint c = u.x ^ u.y;
+
+    return vec3(c&0xff, (c>>8)&0xff, (c>>16)&0xff)/255.0;
+}
+
+{% call(realFuncName, F, T) defTmplFunc("grid", "F", "T") %}
+`T` `realFuncName`(vec2 p)
+{
+    vec2 n = floor(p);
+    vec2 a = p - n;
+
+    return
+    mix(
+        mix(`F`(n), `F`(n+vec2(1.0, 0.0)), smoothstep(0.0, 1.0, a.x)),
+        mix(`F`(n+vec2(1.0, 0.0)), `F`(n+vec2(1.0, 1.0)), smoothstep(0.0, 1.0, a.x)),
+        smoothstep(0.0, 1.0, a.y));
+}
+{% endcall %}
+
+void main()
+{
+	vec2 pos0 = ((gl_FragCoord.xy+coord_offset)*2.0 - resolution)/resolution.y;
+	vec2 pos1 = (gl_FragCoord.xy+coord_offset)/resolution.y;
+
+//	out_color = vec3(pos1, 0.0);
+
+    float c = `tfcall("grid", "sin2", "float")`(pos1*20.0);
+    vec3 d  = `tfcall("grid", "xor", "vec3")`(pos1*160.0);
+    out_color = vec3(d+c);
+}

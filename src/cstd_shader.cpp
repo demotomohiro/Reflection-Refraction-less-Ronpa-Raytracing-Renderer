@@ -59,17 +59,26 @@ GLuint gl_util::load_shader_from_file(GLenum type, const std::string& file, cons
 	using namespace std;
 
 	status = false;
+	string source;
 
-	cout << "Loading " << file << endl;
-	ifstream ifs(file);
-	if(!ifs.good())
-	{
-		cerr << "Failed to read the file!\n";
-		return 0;
-	}
-	string source(
-		std::istreambuf_iterator<char>(ifs.rdbuf()),
-		std::istreambuf_iterator<char>());
+    if(file != "-")
+    {
+        cout << "Loading " << file << endl;
+        ifstream ifs(file);
+        if(!ifs.good())
+        {
+            cerr << "Failed to read the file!\n";
+            return 0;
+        }
+        source = string(
+            std::istreambuf_iterator<char>(ifs.rdbuf()),
+            std::istreambuf_iterator<char>());
+    }else
+    {
+        cout << "Loading from stdin" << endl;
+        //Load until '\0' or EOF so that subpross.Popen in Python can send multiple input.
+        getline(cin, source, '\0');
+    }
 
 	return gl_util::load_shader(type, source, macro_definitions, status);
 }

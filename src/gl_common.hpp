@@ -12,7 +12,7 @@
 #	error Not yet implemented.
 #endif
 
-#ifdef NDEBUG
+#ifndef NDEBUG
 #	undef GLEW_GET_FUN
 #	define GLEW_GET_FUN(x)	(set_last_gl_call(__FILE__, __LINE__, #x), x)
 #	define GL_CALL(x)		(set_last_gl_call(__FILE__, __LINE__, #x), x)
