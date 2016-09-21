@@ -104,6 +104,9 @@ class GLSLJinjaLoader:
     def get_template(self, filename):
         return _GLSLJinaTempl(self.env.get_template(filename))
 
+    def get_includable_template_from_string(self, source):
+        return self.env.from_string(source)
+
 if __name__ == "__main__":
     def _tftest():
         tmplDic = _TemplateFuncDict()

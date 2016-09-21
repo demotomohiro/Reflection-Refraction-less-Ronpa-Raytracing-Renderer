@@ -2,6 +2,7 @@ import argparse
 import subprocess
 import os
 import os.path
+import inspect
 from GLSLJinja import GLSLJinjaLoader
 
 parser = argparse.ArgumentParser(description="Generate multiple images using batchRIshader with particle_DF_with_motion.vert")
@@ -27,9 +28,7 @@ def rotate_y_mat(theta):
 	sin({0}), 0.0,     cos({0}))
     """.format(theta)
 
-for i in range(0, 300):
-    d = dict(cnt = i, rotate_y_mat = rotate_y_mat)
-    particleCode = particleTmpl.render(d)
+def render_frame(source, i):
     p = subprocess.Popen(
         [
             batchRIshader,
@@ -50,7 +49,53 @@ for i in range(0, 300):
         universal_newlines = True,
         stdin = subprocess.PIPE
         )
-    p.communicate(input = particleCode)
+    p.communicate(input = source)
     if p.returncode > 0:
-    #    print(particleCode[:500])
-        break
+    #    print(source[1000:])
+        raise Exception()
+
+def get_line_directive():
+    return '#line %d "%s"\n' % (inspect.stack()[1][2], inspect.stack()[1][1].replace("\\", "\\\\"))
+
+def render_template(include, time, i):
+    tmpl = loader.get_includable_template_from_string(include)
+
+    d = dict(cnt = i, time = time, rotate_y_mat = rotate_y_mat, tmpl = tmpl)
+    return particleTmpl.render(d)
+
+def scene0(time, i):
+    code = (
+        get_line_directive() +
+        """\
+        float t = max(1.0 - `time` - (-star_pos.z+0.09)*4.0, 0.0);
+        float x0 = (star_pos.x+0.25);
+        star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
+    //    star_pos.x = min(star_pos.x, 0.499);
+        """
+    )
+    render_frame(render_template(code, time, i), i)
+
+def scene1(time, i):
+    code = (
+        get_line_directive() +
+        """\
+        vec3 rnorm = normalize(round(normal));
+        float dot = dot(rnorm, star_pos);
+        const float dmin = 0.03, dmax = 0.15;
+        float d = (abs(dot) - dmin)/(dmax - dmin);
+        float t = max(`time` - (1.0 - d), 0.0);
+        star_pos += /*normalize(star_pos)*/sign(dot)*rnorm*t*t*2.;
+        """
+    )
+    render_frame(render_template(code, time, i), i)
+
+def render_anim():
+    FPS = 30.0
+    scenes = [(scene0, 2.0), (scene1, 2.0)]
+    nfrm = 0
+    for scn in scenes:
+        for i in range(int(FPS*scn[1])):
+            scn[0](i/FPS, nfrm)
+            nfrm += 1
+
+render_anim()

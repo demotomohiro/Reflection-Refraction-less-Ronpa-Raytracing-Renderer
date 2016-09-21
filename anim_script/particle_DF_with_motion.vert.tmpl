@@ -131,24 +131,8 @@ void gen_star()
 
     vec3 normal = normalize(grad(star_pos));
 
-    const float change_frames = 60.;
-    //Appear
-    if(true){
-        float t = max(1.0 - (CNT/change_frames) - (-star_pos.z+0.09)*4.0, 0.0);
-        float x0 = (star_pos.x+0.25);
-        star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
-    //    star_pos.x = min(star_pos.x, 0.499);
-    }
-
-    //Disappear
-    {
-        vec3 rnorm = normalize(round(normal));
-        float dot = dot(rnorm, star_pos);
-        const float dmin = 0.03, dmax = 0.15;
-        float d = (abs(dot) - dmin)/(dmax - dmin);
-        float t = max((CNT - change_frames*3.0)/change_frames - (1.0 - d), 0.0);
-        star_pos += /*normalize(star_pos)*/sign(dot)*rnorm*t*t*2.;
-    }
+    const float change_frames = 30.;
+    {% include tmpl %}
 
     star_pos = `rotate_y_mat("ROT_THETA")` * star_pos;
     star_pos -= vec3(0.0, 0.0, 0.5);
