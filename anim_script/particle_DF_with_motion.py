@@ -20,14 +20,6 @@ os.chdir(shaderDir)
 loader = GLSLJinjaLoader(os.path.join(srcDir, "anim_script"))
 particleTmpl = loader.get_template("particle_DF_with_motion.vert.tmpl")
 
-def rotate_y_mat(theta):
-    return """
-        mat3(
-	cos({0}), 0.0,    -sin({0}),
-	0.0,	    1.0,     0.0,
-	sin({0}), 0.0,     cos({0}))
-    """.format(theta)
-
 def render_frame(source, i):
     p = subprocess.Popen(
         [
@@ -40,8 +32,6 @@ def render_frame(source, i):
             "--output",                 os.path.join(outputDir, outputName + "_frm%d.png" % i),
             "--output_w",               str(1920),
             "--output_h",               str(1080),
-            "-DROT_THETA=(%d/120.0*3.141)" % i,
-            "-DCNT=%d" % i,
             "main_shader.frag",
             "-",
             "particle_DF.frag"
@@ -57,13 +47,13 @@ def render_frame(source, i):
 def get_line_directive():
     return '#line %d "%s"\n' % (inspect.stack()[1][2], inspect.stack()[1][1].replace("\\", "\\\\"))
 
-def render_template(include, time, i):
+def render_template(include, time, gbl_time):
     tmpl = loader.get_includable_template_from_string(include)
 
-    d = dict(cnt = i, time = time, rotate_y_mat = rotate_y_mat, tmpl = tmpl)
+    d = dict(time = time, gbl_time = gbl_time, tmpl = tmpl)
     return particleTmpl.render(d)
 
-def scene0(time, i):
+def scene0(time, gbl_time, i):
     code = (
         get_line_directive() +
         """\
@@ -73,9 +63,9 @@ def scene0(time, i):
     //    star_pos.x = min(star_pos.x, 0.499);
         """
     )
-    render_frame(render_template(code, time, i), i)
+    render_frame(render_template(code, time, gbl_time), i)
 
-def scene1(time, i):
+def scene1(time, gbl_time, i):
     code = (
         get_line_directive() +
         """\
@@ -87,7 +77,7 @@ def scene1(time, i):
         star_pos += /*normalize(star_pos)*/sign(dot)*rnorm*t*t*2.;
         """
     )
-    render_frame(render_template(code, time, i), i)
+    render_frame(render_template(code, time, gbl_time), i)
 
 def render_anim():
     FPS = 30.0
@@ -95,7 +85,7 @@ def render_anim():
     nfrm = 0
     for scn in scenes:
         for i in range(int(FPS*scn[1])):
-            scn[0](i/FPS, nfrm)
+            scn[0](i/FPS, nfrm/FPS, nfrm)
             nfrm += 1
 
 render_anim()

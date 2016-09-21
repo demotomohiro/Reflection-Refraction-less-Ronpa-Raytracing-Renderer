@@ -36,6 +36,14 @@ void output_star(vec3 star_pos, float star_dim)
     brOutputPointSize(star_dim, pvm);
 }
 
+mat3 rotate_y_mat(float theta)
+{
+    return mat3(
+        cos(theta), 0.0,    -sin(theta),
+        0.0,        1.0,     0.0,
+        sin(theta), 0.0,     cos(theta));
+}
+
 float round_box(vec3 p, float size)
 {
     vec3 p3 = pow(abs(p), vec3(4.0));
@@ -131,10 +139,9 @@ void gen_star()
 
     vec3 normal = normalize(grad(star_pos));
 
-    const float change_frames = 30.;
     {% include tmpl %}
 
-    star_pos = `rotate_y_mat("ROT_THETA")` * star_pos;
+    star_pos = rotate_y_mat(`gbl_time`*3.141*0.25) * star_pos;
     star_pos -= vec3(0.0, 0.0, 0.5);
 
     //Keep brightness constant after chaning a number of particles.
