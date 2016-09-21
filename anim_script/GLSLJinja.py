@@ -74,7 +74,7 @@ class _PreprocessChoiceLoader(ChoiceLoader):
         lineNo = ["#line %d" % i for i in range(2, len(lines)+2)]
         #Last line under last "#line %d" must not empty or boost wave crash.
         newText = "\n".join(chain(*zip(lines, lineNo))) + "\n\n"
-        return (newText, *ret[1:])
+        return (newText,) + (ret[1:])
 
     def load(self, environment, name, globals=None):
         return super(ChoiceLoader, self).load(environment, name, globals)
@@ -90,8 +90,8 @@ class _GLSLJinaTempl:
             tfcall      = tmplDic.call,
             _tfget      = tmplDic.get,
             _tfrealID   = _tfrealID)
-        self.templ.render(GLSLJinja_IsInstanciate = False, *args, **d, **kwargs)
-        return self.templ.render(GLSLJinja_IsInstanciate = True, *args, **d, **kwargs)
+        self.templ.render(GLSLJinja_IsInstanciate = False, *args, **dict(d, **kwargs))
+        return self.templ.render(GLSLJinja_IsInstanciate = True, *args, **dict(d, **kwargs))
 
 class GLSLJinjaLoader:
     def __init__(self, searchpath=""):
