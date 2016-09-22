@@ -46,13 +46,14 @@ mat3 rotate_y_mat(float theta)
 
 float round_box(vec3 p, float size)
 {
-    vec3 p3 = pow(abs(p), vec3(4.0));
-    return pow(p3.x+p3.y+p3.z, 1.0/4.0) - size;
+    const float r = 32.0;
+    vec3 p3 = pow(abs(p), vec3(r));
+    return pow(p3.x+p3.y+p3.z, 1.0/r) - size;
 }
 
 float round_cross(vec3 p, float size)
 {
-    const float r = 4.0;
+    const float r = `cross_roundness`;
     vec3 p2 = pow(abs(p), vec3(r));
 
     float z = pow(p2.x+p2.y, 1.0/r) - size;
@@ -138,6 +139,9 @@ void gen_star()
 #endif
 
     vec3 normal = normalize(grad(star_pos));
+    const float ground = -0.125;
+    const vec3 DFmin = vec3(-0.125), DFmax = vec3(0.125);
+    const vec3 DFsize = DFmax - DFmin;
 
     {% include tmpl %}
 

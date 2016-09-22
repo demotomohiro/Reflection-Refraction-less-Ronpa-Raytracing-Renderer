@@ -47,25 +47,49 @@ def render_frame(source, i):
 def get_line_directive():
     return '#line %d "%s"\n' % (inspect.stack()[1][2], inspect.stack()[1][1].replace("\\", "\\\\"))
 
-def render_template(include, time, gbl_time):
+def render_template(include, time, gbl_time, cross_roundness = 16.0):
     tmpl = loader.get_includable_template_from_string(include)
 
-    d = dict(time = time, gbl_time = gbl_time, tmpl = tmpl)
+    d = dict(time = time, gbl_time = gbl_time, tmpl = tmpl, cross_roundness = cross_roundness)
     return particleTmpl.render(d)
 
-def scene0(time, gbl_time, i):
+def scene_x_slide(time, gbl_time, i):
     code = (
         get_line_directive() +
         """\
         float t = max(1.0 - `time` - (-star_pos.z+0.09)*4.0, 0.0);
         float x0 = (star_pos.x+0.25);
         star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
-    //    star_pos.x = min(star_pos.x, 0.499);
+        """
+    )
+    render_frame(render_template(code, time, gbl_time, 2.0), i)
+
+def scene_suck(time, gbl_time, i):
+    code = (
+        get_line_directive() +
+        """\
+        vec3 center = vec3(0.0);
+        float nrmdist = length(star_pos - center) / length(DFmin - center);
+        float t = clamp(1.0 + nrmdist - `time`, 0.0, 1.0);
+        star_pos = (star_pos - center)*pow(t, 4.0) + center;
+        """
+    )
+    render_frame(render_template(code, time, gbl_time, 2.0), i)
+
+def scene_box_stack(time, gbl_time, i):
+    code = (
+        get_line_directive() +
+        """\
+            uvec3 blk = uvec3(abs((star_pos - vec3(0.0, ground, 0.0))* 32.0));
+            vec3 timing = uintToFloat(Philox4x32(uvec4(blk.xz, 19, 11), uvec2(32743, 410275))).xyz;
+        //    float t = max(`time` - timing.y*0.5 - float(blk.y)/16.0, 0.0);
+            float t = max(0.3 + timing.y + float(blk.y)/12.0 - `time`, 0.0);
+            star_pos.y += t*t*8.0;
         """
     )
     render_frame(render_template(code, time, gbl_time), i)
 
-def scene1(time, gbl_time, i):
+def scene_plates(time, gbl_time, i):
     code = (
         get_line_directive() +
         """\
@@ -81,7 +105,8 @@ def scene1(time, gbl_time, i):
 
 def render_anim():
     FPS = 30.0
-    scenes = [(scene0, 2.0), (scene1, 2.0)]
+    scenes = [(scene_x_slide, 2.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (scene_plates, 2.0)]
+    #scenes = [(scene_suck, 2.0)]
     nfrm = 0
     for scn in scenes:
         for i in range(int(FPS*scn[1])):
