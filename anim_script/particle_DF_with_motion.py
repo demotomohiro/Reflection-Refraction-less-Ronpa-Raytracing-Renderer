@@ -107,18 +107,13 @@ def scene_plates(timeinfo):
     code = (
         get_line_directive() +
         """\
-        vec3 rnorm = round(normal);
-        if(abs(rnorm).y > 0.9)
-            rnorm = round(normalize(vec3(star_pos.x, 0.0, star_pos.z)));
-        if(abs(rnorm).x > 0.9 && abs(rnorm).z > 0.9)
-            rnorm = vec3(1.0, 0.0, 0.0);
-        rnorm = normalize(rnorm);
-        float dot = dot(rnorm, star_pos);
-        rnorm *= sign(dot);
+        bool axis = abs(star_pos.x) > abs(star_pos.z);
+        vec3 rnorm = axis ? vec3(sign(star_pos.x), 0.0, 0.0) : vec3(0.0, 0.0, sign(star_pos.z));
+        float dist = abs(axis ? star_pos.x : star_pos.z);
         const float dmin = 0.00, dmax = 0.15;
-        float d = (abs(dot) - dmin)/(dmax - dmin);
+        float d = (abs(dist) - dmin)/(dmax - dmin);
         float t = clamp(`t01`*2.0 - (1.0 - d), 0.0, 1.0);
-        float theta = t*3.1416*0.5;
+        float theta = pow(t, 0.3)*3.1416*0.5;
         float h = star_pos.y - DFmin.y;
         vec3 v = rnorm*h*sin(theta) + vec3(0.0, 1.0, 0.0)*h*cos(theta);
         star_pos = v + vec3(star_pos.x, DFmin.y, star_pos.z);
