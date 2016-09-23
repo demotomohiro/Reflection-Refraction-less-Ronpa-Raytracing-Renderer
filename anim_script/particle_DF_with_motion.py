@@ -70,7 +70,8 @@ def scene_x_slide(timeinfo):
     code = (
         get_line_directive() +
         """\
-        float t = max(1.0 - `t01`*2.0 - (-star_pos.z+0.09)*4.0, 0.0);
+        float nrmz = (star_pos.z - DFmin.z) / DFsize.z;
+        float t = max(0.08 + nrmz*1.85 - `t01`*2.0, 0.0);
         float x0 = (star_pos.x+0.25);
         star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
         """
@@ -106,12 +107,21 @@ def scene_plates(timeinfo):
     code = (
         get_line_directive() +
         """\
-        vec3 rnorm = normalize(round(normal));
+        vec3 rnorm = round(normal);
+        if(abs(rnorm).y > 0.9)
+            rnorm = round(normalize(vec3(star_pos.x, 0.0, star_pos.z)));
+        if(abs(rnorm).x > 0.9 && abs(rnorm).z > 0.9)
+            rnorm = vec3(1.0, 0.0, 0.0);
+        rnorm = normalize(rnorm);
         float dot = dot(rnorm, star_pos);
-        const float dmin = 0.03, dmax = 0.15;
+        rnorm *= sign(dot);
+        const float dmin = 0.00, dmax = 0.15;
         float d = (abs(dot) - dmin)/(dmax - dmin);
-        float t = max(`t01`*2.0 - (1.0 - d), 0.0);
-        star_pos += /*normalize(star_pos)*/sign(dot)*rnorm*t*t*2.;
+        float t = clamp(`t01`*2.0 - (1.0 - d), 0.0, 1.0);
+        float theta = t*3.1416*0.5;
+        float h = star_pos.y - DFmin.y;
+        vec3 v = rnorm*h*sin(theta) + vec3(0.0, 1.0, 0.0)*h*cos(theta);
+        star_pos = v + vec3(star_pos.x, DFmin.y, star_pos.z);
         """
     )
     return render_template(code, timeinfo)
