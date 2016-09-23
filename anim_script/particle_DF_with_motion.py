@@ -66,6 +66,16 @@ class TimeInfo:
     def get_global_time(self):
         return self.global_frame/self.FPS
 
+def get_scene_still(cross_roundness = None):
+    def scene_still(timeinfo):
+        code = (
+            get_line_directive() +
+            """\
+            """
+        )
+        return render_template(code, timeinfo, cross_roundness) if cross_roundness != None else render_template(code, timeinfo)
+    return scene_still
+
 def scene_x_slide(timeinfo):
     code = (
         get_line_directive() +
@@ -123,12 +133,14 @@ def scene_plates(timeinfo):
 
 def render_anim():
     FPS = 30.0
-    scenes = [(scene_x_slide, 2.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (scene_plates, 2.0)]
+    duration_scaling = 1.0
+    scenes = [(scene_x_slide, 2.0), (get_scene_still(2.0), 1.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (get_scene_still(), 1.0), (scene_plates, 2.0)]
     #scenes = [(scene_suck, 2.0)]
     nfrm = 0
     for scn in scenes:
-        for i in range(int(FPS*scn[1])):
-            timeinfo = TimeInfo(FPS, i, nfrm, scn[1])
+        duration = scn[1] * duration_scaling
+        for i in range(int(FPS*duration)):
+            timeinfo = TimeInfo(FPS, i, nfrm, duration)
             render_frame(scn[0](timeinfo), nfrm)
             nfrm += 1
 
