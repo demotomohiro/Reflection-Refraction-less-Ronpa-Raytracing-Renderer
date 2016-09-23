@@ -47,49 +47,62 @@ def render_frame(source, i):
 def get_line_directive():
     return '#line %d "%s"\n' % (inspect.stack()[1][2], inspect.stack()[1][1].replace("\\", "\\\\"))
 
-def render_template(include, time, gbl_time, cross_roundness = 16.0):
+def render_template(include, timeinfo, cross_roundness = 16.0):
     tmpl = loader.get_includable_template_from_string(include)
 
-    d = dict(time = time, gbl_time = gbl_time, tmpl = tmpl, cross_roundness = cross_roundness)
+    d = dict(t01 = timeinfo.get_t01(), gbl_time = timeinfo.get_global_time(), tmpl = tmpl, cross_roundness = cross_roundness)
     return particleTmpl.render(d)
 
-def scene_x_slide(time, gbl_time, i):
+class TimeInfo:
+    def __init__(self, FPS, local_frame, global_frame, duration):
+        self.FPS            = FPS
+        self.local_frame    = local_frame
+        self.global_frame   = global_frame
+        self.duration       = duration
+
+    def get_t01(self):
+        return self.local_frame/(self.FPS*self.duration)
+
+    def get_global_time(self):
+        return self.global_frame/self.FPS
+
+def scene_x_slide(timeinfo, i):
     code = (
         get_line_directive() +
         """\
-        float t = max(1.0 - `time` - (-star_pos.z+0.09)*4.0, 0.0);
+        float t = max(1.0 - `t01`*2.0 - (-star_pos.z+0.09)*4.0, 0.0);
         float x0 = (star_pos.x+0.25);
         star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
         """
     )
-    render_frame(render_template(code, time, gbl_time, 2.0), i)
+    render_frame(render_template(code, timeinfo, 2.0), i)
 
-def scene_suck(time, gbl_time, i):
+def scene_suck(timeinfo, i):
     code = (
         get_line_directive() +
         """\
         vec3 center = vec3(0.0);
         float nrmdist = length(star_pos - center) / length(DFmin - center);
-        float t = clamp(1.0 + nrmdist - `time`, 0.0, 1.0);
+        float t = clamp(1.0 + nrmdist - `t01`*2.0, 0.0, 1.0);
         star_pos = (star_pos - center)*pow(t, 4.0) + center;
         """
     )
-    render_frame(render_template(code, time, gbl_time, 2.0), i)
+    render_frame(render_template(code, timeinfo, 2.0), i)
 
-def scene_box_stack(time, gbl_time, i):
+def scene_box_stack(timeinfo, i):
     code = (
         get_line_directive() +
         """\
             uvec3 blk = uvec3(abs((star_pos - vec3(0.0, ground, 0.0))* 32.0));
             vec3 timing = uintToFloat(Philox4x32(uvec4(blk.xz, 19, 11), uvec2(32743, 410275))).xyz;
-        //    float t = max(`time` - timing.y*0.5 - float(blk.y)/16.0, 0.0);
-            float t = max(0.3 + timing.y + float(blk.y)/12.0 - `time`, 0.0);
+        //    float t = max(`t01`*2.0 - timing.y*0.5 - float(blk.y)/16.0, 0.0);
+            float t = max(0.3 + timing.y + float(blk.y)/12.0 - `t01`*2.0, 0.0);
             star_pos.y += t*t*8.0;
         """
     )
-    render_frame(render_template(code, time, gbl_time), i)
+    render_frame(render_template(code, timeinfo), i)
 
-def scene_plates(time, gbl_time, i):
+def scene_plates(timeinfo, i):
     code = (
         get_line_directive() +
         """\
@@ -97,11 +110,11 @@ def scene_plates(time, gbl_time, i):
         float dot = dot(rnorm, star_pos);
         const float dmin = 0.03, dmax = 0.15;
         float d = (abs(dot) - dmin)/(dmax - dmin);
-        float t = max(`time` - (1.0 - d), 0.0);
+        float t = max(`t01`*2.0 - (1.0 - d), 0.0);
         star_pos += /*normalize(star_pos)*/sign(dot)*rnorm*t*t*2.;
         """
     )
-    render_frame(render_template(code, time, gbl_time), i)
+    render_frame(render_template(code, timeinfo), i)
 
 def render_anim():
     FPS = 30.0
@@ -110,7 +123,8 @@ def render_anim():
     nfrm = 0
     for scn in scenes:
         for i in range(int(FPS*scn[1])):
-            scn[0](i/FPS, nfrm/FPS, nfrm)
+            timeinfo = TimeInfo(FPS, i, nfrm, scn[1])
+            scn[0](timeinfo, nfrm)
             nfrm += 1
 
 render_anim()
