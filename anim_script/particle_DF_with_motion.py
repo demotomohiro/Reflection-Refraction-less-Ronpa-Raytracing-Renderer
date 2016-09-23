@@ -66,7 +66,7 @@ class TimeInfo:
     def get_global_time(self):
         return self.global_frame/self.FPS
 
-def scene_x_slide(timeinfo, i):
+def scene_x_slide(timeinfo):
     code = (
         get_line_directive() +
         """\
@@ -75,9 +75,9 @@ def scene_x_slide(timeinfo, i):
         star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
         """
     )
-    render_frame(render_template(code, timeinfo, 2.0), i)
+    return render_template(code, timeinfo, 2.0)
 
-def scene_suck(timeinfo, i):
+def scene_suck(timeinfo):
     code = (
         get_line_directive() +
         """\
@@ -87,9 +87,9 @@ def scene_suck(timeinfo, i):
         star_pos = (star_pos - center)*pow(t, 4.0) + center;
         """
     )
-    render_frame(render_template(code, timeinfo, 2.0), i)
+    return render_template(code, timeinfo, 2.0)
 
-def scene_box_stack(timeinfo, i):
+def scene_box_stack(timeinfo):
     code = (
         get_line_directive() +
         """\
@@ -100,9 +100,9 @@ def scene_box_stack(timeinfo, i):
             star_pos.y += t*t*8.0;
         """
     )
-    render_frame(render_template(code, timeinfo), i)
+    return render_template(code, timeinfo)
 
-def scene_plates(timeinfo, i):
+def scene_plates(timeinfo):
     code = (
         get_line_directive() +
         """\
@@ -114,7 +114,7 @@ def scene_plates(timeinfo, i):
         star_pos += /*normalize(star_pos)*/sign(dot)*rnorm*t*t*2.;
         """
     )
-    render_frame(render_template(code, timeinfo), i)
+    return render_template(code, timeinfo)
 
 def render_anim():
     FPS = 30.0
@@ -124,7 +124,7 @@ def render_anim():
     for scn in scenes:
         for i in range(int(FPS*scn[1])):
             timeinfo = TimeInfo(FPS, i, nfrm, scn[1])
-            scn[0](timeinfo, nfrm)
+            render_frame(scn[0](timeinfo), nfrm)
             nfrm += 1
 
 render_anim()
