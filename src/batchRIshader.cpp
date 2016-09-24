@@ -344,6 +344,24 @@ private:
     GLint                   vertexID_offset_loc = -1;
 };
 
+class progress_display
+{
+public:
+    progress_display(int num_steps):
+        num_steps(num_steps)
+    {
+    }
+
+    void operator++()
+    {
+        std::cout << "Progress: " << ++i << '/' << num_steps << '\r' << std::flush;
+    }
+
+private:
+    const int num_steps;
+    int i = 0;
+};
+
 }
 
 
@@ -383,6 +401,8 @@ int main(int argc, char* argv[])
 
 	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
 
+    progress_display progress(ri.num_tile_x * ri.num_tile_y * (1+(opts.is_draw_particles ? opts.num_div_particles : 0)));
+
 	cout << "Rendering ..." << endl;
 	const steady_clock::time_point render_begin = steady_clock::now();
 
@@ -392,6 +412,7 @@ int main(int argc, char* argv[])
 	for(GLsizei i=0; i<ri.num_tile_x; ++i)
 	{
         r.partial_draw_fullscreen((float)i*ri.get_draw_w(), (float)j*ri.get_draw_h());
+        ++progress;
 
 		if(opts.is_draw_particles)
 		{
@@ -400,6 +421,7 @@ int main(int argc, char* argv[])
 			for(GLsizei k=0; k<opts.num_div_particles; ++k)
 			{
                 r.partial_draw_particles(k, num_particles_per_draw);
+                ++progress;
 			}
 			glDisable(GL_BLEND);
 		}
