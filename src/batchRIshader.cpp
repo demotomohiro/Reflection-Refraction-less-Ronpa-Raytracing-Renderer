@@ -164,21 +164,10 @@ struct renderer
 		return is_render;
 	}
 
-	GLuint get_program() const
-	{
-		assert(glIsProgram(program));
-		return program;
-	}
-
-	GLuint get_particle_program() const
-	{
-		assert(glIsProgram(particle_program));
-		return particle_program;
-	}
-
     void partial_draw_fullscreen(const float coord_offset_x, const float coord_offset_y)
     {
-		GL_CALL(glUseProgram(get_program()));
+		assert(glIsProgram(program));
+		glUseProgram(program);
 		if(coord_offset_loc != -1)
 		{
 			const float offset[] = {coord_offset_x, coord_offset_y};
@@ -189,9 +178,11 @@ struct renderer
 
     void prepare_draw_particles(GLsizei i, GLsizei j, const render_info& ri)
     {
+		assert(glIsProgram(particle_program));
+
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
-        GL_CALL(glUseProgram(get_particle_program()));
+        glUseProgram(particle_program);
         if(viewport_offset_loc != -1)
         {
             glUniform2f
