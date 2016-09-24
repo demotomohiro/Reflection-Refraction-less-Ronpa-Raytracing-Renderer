@@ -20,3 +20,7 @@ projectVC2012/x64/*
 
 #vim
 *.swp
+
+#python
+__pycache__
+
