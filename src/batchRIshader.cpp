@@ -176,6 +176,45 @@ struct renderer
 		return particle_program;
 	}
 
+    void partial_draw_fullscreen(const float coord_offset_x, const float coord_offset_y)
+    {
+		GL_CALL(glUseProgram(get_program()));
+		if(coord_offset_loc != -1)
+		{
+			const float offset[] = {coord_offset_x, coord_offset_y};
+			glUniform2fv(coord_offset_loc, 1, offset);
+		}
+		GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 3));
+    }
+
+    void prepare_draw_particles(GLsizei i, GLsizei j, const render_info& ri)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE);
+        GL_CALL(glUseProgram(get_particle_program()));
+        if(viewport_offset_loc != -1)
+        {
+            glUniform2f
+            (
+                viewport_offset_loc,
+                (float)((int)ri.num_tile_x-(int)i*2-1),
+                (float)((int)ri.num_tile_y-(int)j*2-1)
+            );
+        }
+    }
+
+    void partial_draw_particles(GLsizei k, const GLsizei num_particles_per_draw)
+    {
+        if(vertexID_offset_loc != -1)
+            glUniform1i
+            (
+                vertexID_offset_loc,
+                num_particles_per_draw*k
+            );
+        GL_CALL(glDrawArrays(GL_POINTS, 0, num_particles_per_draw));
+        glFinish();	//TDRëŒçÙ.
+    }
+
 private:
 
 	bool	init_fullscreen_program(const options& opts)
@@ -217,6 +256,12 @@ private:
 			const float res[] = {(float)ri.output_w*spr_smpl_w, (float)ri.output_h*spr_smpl_w};
 			glUniform2fv(loc, 1, res);
 		}
+
+        coord_offset_loc = glGetUniformLocation(program, "coord_offset");
+        if(coord_offset_loc == -1)
+        {
+            cerr << "Warning, add & use \"uniform vec2 coord_offset;\" in your fullscreen fragment shader.\n";
+        }
 
         return true;
 	}
@@ -283,6 +328,18 @@ private:
 			glUniform1f(loc, aspect_rate);
 		}
 
+        viewport_offset_loc = glGetUniformLocation(particle_program, "viewport_offset");
+        if(viewport_offset_loc == -1)
+        {
+            cerr << "Warning, add & use \"uniform vec2 viewport_offset;\" in your particle vertex shader.\n";
+        }
+
+        vertexID_offset_loc = glGetUniformLocation(particle_program, "vertexID_offset");
+        if(vertexID_offset_loc == -1)
+        {
+            cerr << "Warning, add & use \"uniform int vertexID_offset;\" in your particle vertex shader.\n";
+        }
+
         return true;
 	}
 
@@ -291,6 +348,9 @@ private:
 	gl_util::glcontext		cntxt;
 	gl_util::scoped_program	program;
 	gl_util::scoped_program	particle_program;
+    GLint                   coord_offset_loc    = -1;
+    GLint                   viewport_offset_loc = -1;
+    GLint                   vertexID_offset_loc = -1;
 };
 
 }
@@ -317,40 +377,6 @@ int main(int argc, char* argv[])
 	glGetIntegerv(GL_CURRENT_PROGRAM, reinterpret_cast<GLint*>(&prog));
 	assert(glIsProgram(prog)==GL_TRUE);
 
-	const GLint coord_offset_loc = glGetUniformLocation(r.get_program(), "coord_offset");
-	if(coord_offset_loc == -1)
-	{
-		cerr << "Warning, add & use \"uniform vec2 coord_offset;\" in your fullscreen fragment shader.\n";
-	}
-
-	const GLint viewport_offset_loc = 
-		opts.is_draw_particles ?
-		[&r](){
-			GL_CALL(glUseProgram(r.get_particle_program()));
-			const GLint loc = glGetUniformLocation(r.get_particle_program(), "viewport_offset");
-			if(loc == -1)
-			{
-				cerr << "Warning, add & use \"uniform vec2 viewport_offset;\" in your particle vertex shader.\n";
-			}
-			return loc;
-		}()
-		:
-		-1;
-
-	const GLint vertexID_offset_loc = 
-		opts.is_draw_particles ?
-		[&r](){
-			GL_CALL(glUseProgram(r.get_particle_program()));
-			const GLint loc = glGetUniformLocation(r.get_particle_program(), "vertexID_offset");
-			if(loc == -1)
-			{
-				cerr << "Warning, add & use \"uniform int vertexID_offset;\" in your particle vertex shader.\n";
-			}
-			return loc;
-		}()
-		:
-		-1;
-
 	const render_info& ri = opts.rinfo;
 
 //	frame_buffer_object fbo
@@ -374,38 +400,15 @@ int main(int argc, char* argv[])
 	for(GLsizei j=0; j<ri.num_tile_y; ++j)
 	for(GLsizei i=0; i<ri.num_tile_x; ++i)
 	{
-		GL_CALL(glUseProgram(r.get_program()));
-		if(coord_offset_loc != -1)
-		{
-			const float offset[] = {(float)i*ri.get_draw_w(), (float)j*ri.get_draw_h()};
-			glUniform2fv(coord_offset_loc, 1, offset);
-		}
-		GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 3));
+        r.partial_draw_fullscreen((float)i*ri.get_draw_w(), (float)j*ri.get_draw_h());
+
 		if(opts.is_draw_particles)
 		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_ONE, GL_ONE);
-			GL_CALL(glUseProgram(r.get_particle_program()));
-			if(viewport_offset_loc != -1)
-			{
-				glUniform2f
-				(
-					viewport_offset_loc,
-					(float)((int)ri.num_tile_x-(int)i*2-1),
-					(float)((int)ri.num_tile_y-(int)j*2-1)
-				);
-			}
+            r.prepare_draw_particles(i, j, ri);
 			const GLsizei num_particles_per_draw = opts.num_particles / opts.num_div_particles;
 			for(GLsizei k=0; k<opts.num_div_particles; ++k)
 			{
-				if(vertexID_offset_loc != -1)
-					glUniform1i
-					(
-						vertexID_offset_loc,
-						num_particles_per_draw*k
-					);
-				GL_CALL(glDrawArrays(GL_POINTS, 0, num_particles_per_draw));
-				glFinish();	//TDRëŒçÙ.
+                r.partial_draw_particles(k, num_particles_per_draw);
 			}
 			glDisable(GL_BLEND);
 		}
