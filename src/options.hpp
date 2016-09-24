@@ -65,6 +65,7 @@ struct options
     std::vector<std::string>    macro_definitions;
 	GLsizei		num_particles;
 	GLsizei		num_div_particles;
+    bool        hide_gl_info;
 	render_info	rinfo;
 };
 

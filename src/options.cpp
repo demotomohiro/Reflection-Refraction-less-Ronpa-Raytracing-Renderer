@@ -39,6 +39,7 @@ options::options(int argc, char* argv[]):
 		("num_particles",program_options::value<GLsizei>(), "Number of particles"				)
 		("num_div_particles", program_options::value<GLsizei>(), "Number of particles divide"	)
         ("define,D",    program_options::value< vector<string> >(),   "Define macro used in shader sources")
+        ("hide_gl_info",  program_options::value<bool>(&hide_gl_info)->default_value(false)->implicit_value(true), "Suppress displaying OpenGL context infomation")
 	;
 
 	program_options::positional_options_description	p;

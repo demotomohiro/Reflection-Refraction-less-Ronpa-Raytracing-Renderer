@@ -129,7 +129,11 @@ struct renderer
 			return;
 		}
 
-		print_gl_info();
+        if(!opts.hide_gl_info)
+        {
+            print_gl_info();
+        }
+
 		init_gl();
 		if(!init_fullscreen_program(opts))
         {
