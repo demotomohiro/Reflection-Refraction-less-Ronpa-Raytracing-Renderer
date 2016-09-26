@@ -29,7 +29,7 @@ def render_frame(source, i):
             "--super_sampling_level",   str(0),
             "--num_tile_x",             str(1),
             "--num_tile_y",             str(1),
-            "--output",                 os.path.join(outputDir, outputName + "_frm%d.png" % i),
+            "--output",                 os.path.join(outputDir, outputName + "_frm%05d.png" % i),
             "--output_w",               str(1920),
             "--output_h",               str(1080),
             "main_shader.frag",
@@ -50,15 +50,21 @@ def get_line_directive():
 def render_template(include, timeinfo, cross_roundness = 16.0):
     tmpl = loader.get_includable_template_from_string(include)
 
-    d = dict(t01 = timeinfo.get_t01(), gbl_time = timeinfo.get_global_time(), tmpl = tmpl, cross_roundness = cross_roundness)
+    d = dict(
+        t01                 = timeinfo.get_t01(),
+        gbl_time            = timeinfo.get_global_time(),
+        tmpl                = tmpl,
+        cross_roundness     = cross_roundness,
+        duration_scaling    = timeinfo.duration_scaling)
     return particleTmpl.render(d)
 
 class TimeInfo:
-    def __init__(self, FPS, local_frame, global_frame, duration):
+    def __init__(self, FPS, local_frame, global_frame, duration, duration_scaling):
         self.FPS            = FPS
         self.local_frame    = local_frame
         self.global_frame   = global_frame
         self.duration       = duration
+        self.duration_scaling   = duration_scaling
 
     def get_t01(self):
         return self.local_frame/(self.FPS*self.duration)
@@ -140,7 +146,7 @@ def render_anim():
     for scn in scenes:
         duration = scn[1] * duration_scaling
         for i in range(int(FPS*duration)):
-            timeinfo = TimeInfo(FPS, i, nfrm, duration)
+            timeinfo = TimeInfo(FPS, i, nfrm, duration, duration_scaling)
             render_frame(scn[0](timeinfo), nfrm)
             nfrm += 1
 

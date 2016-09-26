@@ -145,7 +145,7 @@ void gen_star()
 
     {% include tmpl %}
 
-    star_pos = rotate_y_mat(`gbl_time`*3.141*0.25) * star_pos;
+    star_pos = rotate_y_mat(`gbl_time`*3.141*0.25/`duration_scaling`) * star_pos;
     star_pos -= vec3(0.0, 0.0, 0.5);
 
     //Keep brightness constant after chaning a number of particles.
