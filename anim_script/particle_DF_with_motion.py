@@ -32,6 +32,7 @@ def render_frame(source, i):
             "--output",                 os.path.join(outputDir, outputName + "_frm%05d.png" % i),
             "--output_w",               str(1920),
             "--output_h",               str(1080),
+            "--hide_gl_info",
             "main_shader.frag",
             "-",
             "particle_DF.frag"
@@ -142,6 +143,7 @@ def render_anim():
     duration_scaling = 1.0
     scenes = [(scene_x_slide, 2.0), (get_scene_still(2.0), 1.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (get_scene_still(), 1.0), (scene_plates, 2.0)]
     #scenes = [(scene_suck, 2.0)]
+    total_nframes = sum(int(i[1]*duration_scaling*FPS) for i in scenes)
     nfrm = 0
     for scn in scenes:
         duration = scn[1] * duration_scaling
@@ -149,5 +151,6 @@ def render_anim():
             timeinfo = TimeInfo(FPS, i, nfrm, duration, duration_scaling)
             render_frame(scn[0](timeinfo), nfrm)
             nfrm += 1
+            print("Animation Progress: %d/%d" % (nfrm, total_nframes))
 
 render_anim()
