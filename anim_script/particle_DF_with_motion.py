@@ -103,6 +103,7 @@ def scene_suck(timeinfo):
         float nrmdist = length(star_pos - center) / length(DFmin - center);
         float t = clamp(1.0 + nrmdist - `t01`*2.0, 0.0, 1.0);
         star_pos = (star_pos - center)*pow(t, 4.0) + center;
+        color_scaling = max(pow((t - 0.2)/(1.0-0.2), 8.0), 0.0);
         """
     )
     return render_template(code, timeinfo, 2.0)

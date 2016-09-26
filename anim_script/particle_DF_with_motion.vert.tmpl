@@ -142,6 +142,7 @@ void gen_star()
     const float ground = -0.125;
     const vec3 DFmin = vec3(-0.125), DFmax = vec3(0.125);
     const vec3 DFsize = DFmax - DFmin;
+    float color_scaling = 1.0;
 
     {% include tmpl %}
 
@@ -152,7 +153,7 @@ void gen_star()
 	float star_dim = ZNEAR_H*inversesqrt(BR_NUM_PARTICLESF/float(65536<<8));
 	output_star(star_pos, star_dim);
 
-	vary_color = vec4(abs(normal)*0.04, 0.05);
+	vary_color = vec4(abs(normal)*0.04*color_scaling, 0.05);
 }
 
 void main()
