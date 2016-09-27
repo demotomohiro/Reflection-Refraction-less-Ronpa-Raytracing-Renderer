@@ -125,16 +125,35 @@ def scene_plates(timeinfo):
     code = (
         get_line_directive() +
         """\
+        float t0 = `t01`*4.0;
+        float t1 = clamp(`t01`*4.0 - 1.0, 0.0, 1.0);
+        float t2 = clamp(`t01`*4.0 - 2.0, 0.0, 1.0);
+        float t3 = clamp(`t01`*4.0 - 3.0, 0.0, 1.0);
+        vec3 in_star_pos = star_pos;
         bool axis = abs(star_pos.x) > abs(star_pos.z);
         vec3 rnorm = axis ? vec3(sign(star_pos.x), 0.0, 0.0) : vec3(0.0, 0.0, sign(star_pos.z));
         float dist = abs(axis ? star_pos.x : star_pos.z);
-        const float dmin = 0.00, dmax = 0.15;
+        const float dmin = 0.04, dmax = 0.125;
         float d = (abs(dist) - dmin)/(dmax - dmin);
-        float t = clamp(`t01`*2.0 - (1.0 - d), 0.0, 1.0);
-        float theta = pow(t, 0.3)*3.1416*0.5;
+        const float fall_duration = 0.25;
+        float t = clamp(t0*(1.0+fall_duration) - (1.0 - d), 0.0, fall_duration);
+        float theta = pow(t/fall_duration, 2.0)*3.1416*0.5;
         float h = star_pos.y - DFmin.y;
         vec3 v = rnorm*h*sin(theta) + vec3(0.0, 1.0, 0.0)*h*cos(theta);
         star_pos = v + vec3(star_pos.x, DFmin.y, star_pos.z);
+
+        float depth = dmax - dist;
+        //star_pos.y += depth*t1;
+        star_pos += vec3(rnorm.x, 1.0, rnorm.z)*depth*t1;
+
+        vec3 center = in_star_pos + rnorm*depth;
+        center.y = DFmin.y;
+        float theta3 = t3*3.1416*0.5;
+        vec3 xaxis = rnorm*cos(theta3) + vec3(0.0, 1.0, 0.0)*sin(theta3);
+        vec3 yaxis = -rnorm*sin(theta3) + vec3(0.0, 1.0, 0.0)*cos(theta3);
+        vec3 dir = star_pos - center;
+        star_pos = dot(dir, rnorm) * xaxis + dir.y*yaxis + center;
+
         """
     )
     return render_template(code, timeinfo)
@@ -142,7 +161,7 @@ def scene_plates(timeinfo):
 def render_anim():
     FPS = 30.0
     duration_scaling = 1.0
-    scenes = [(scene_x_slide, 2.0), (get_scene_still(2.0), 1.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (get_scene_still(), 1.0), (scene_plates, 2.0)]
+    scenes = [(scene_x_slide, 2.0), (get_scene_still(2.0), 1.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (get_scene_still(), 1.0), (scene_plates, 4.0)]
     #scenes = [(scene_suck, 2.0)]
     total_nframes = sum(int(i[1]*duration_scaling*FPS) for i in scenes)
     nfrm = 0
