@@ -88,7 +88,9 @@ def scene_x_slide(timeinfo):
         get_line_directive() +
         """\
         float nrmz = (star_pos.z - DFmin.z) / DFsize.z;
-        float t = max(0.08 + nrmz*1.85 - `t01`*2.0, 0.0);
+        float t = 0.08 + nrmz*1.85 - `t01`*2.0;
+        color_scaling = t > 0.0 ? 1.0 : 1.0/max(-t*32.0, 0.01) + 1.0;
+        t = max(t, 0.0);
         float x0 = (star_pos.x+0.25);
         star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
         """
