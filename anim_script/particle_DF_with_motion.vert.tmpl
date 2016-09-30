@@ -94,6 +94,19 @@ vec3 grad(vec3 p)
         (DF(p+delta.yyx) - DF(p-delta.yyx)));
 }
 
+float div_grad(vec3 p)
+{
+    const vec2 delta = vec2(0.0005, 0.0) * 2.0;
+    return
+    (
+        (DF(p+delta.xyy) - 2.0*DF(p) + DF(p-delta.xyy))
+        +
+        (DF(p+delta.yxy) - 2.0*DF(p) + DF(p-delta.yxy))
+        +
+        (DF(p+delta.yyx) - 2.0*DF(p) + DF(p-delta.yyx))
+    ) / (delta.x * delta.x);
+}
+
 vec3 align_on_DF(vec3 star_pos)
 {
 	int vid = brGetVertexID();

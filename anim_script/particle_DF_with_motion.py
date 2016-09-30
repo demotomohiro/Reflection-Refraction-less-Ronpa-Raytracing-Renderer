@@ -158,10 +158,28 @@ def scene_plates(timeinfo):
     )
     return render_template(code, timeinfo)
 
+def scene_sphere(timeinfo):
+    code = (
+        get_line_directive() +
+        """\
+        float t0 = min(`t01`*5.0, 1.0);
+        float t1 = clamp(`t01`*5.0 - 1.0, 0.0, 1.0);
+        float t2 = clamp(`t01`*5.0 - 2.0, 0.0, 1.0);
+        float t3 = clamp(`t01`*5.0 - 3.0, 0.0, 1.0);
+        float t4 = clamp(`t01`*5.0 - 4.0, 0.0, 1.0);
+        float dg = abs(div_grad(star_pos))*0.0625*0.5;
+        dg = dg*dg;
+        vec3 sphere = normalize(star_pos)*DFsize.x*0.5*sqrt(2.0)*(1.0 - t2*0.25);
+        star_pos = mix(star_pos, sphere, (t0 + t2)*(1.0 - t4));
+        color_scaling = mix(1.0, min(dg*dg*0.0625*0.125*0.125, 8.0), t1);
+        """
+    )
+    return render_template(code, timeinfo)
+
 def render_anim():
     FPS = 30.0
     duration_scaling = 1.0
-    scenes = [(scene_x_slide, 2.0), (get_scene_still(2.0), 1.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (get_scene_still(), 1.0), (scene_plates, 4.0)]
+    scenes = [(scene_x_slide, 2.0), (get_scene_still(2.0), 1.0), (scene_suck, 2.0), (scene_box_stack, 2.0), (get_scene_still(), 1.0), (scene_plates, 4.0), (scene_sphere, 5.0)]
     #scenes = [(scene_suck, 2.0)]
     total_nframes = sum(int(i[1]*duration_scaling*FPS) for i in scenes)
     nfrm = 0
