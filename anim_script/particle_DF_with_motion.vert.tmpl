@@ -30,6 +30,8 @@ const mat4 pvm = projection;
 
 out vec4 vary_color;
 
+{% from "tmplFunc.tmpl" import defTmplFunc with context %}
+
 void output_star(vec3 star_pos, float star_dim)
 {
     brOutputPosition(star_pos, pvm);
@@ -63,11 +65,28 @@ float round_cross(vec3 p, float size)
     return min(x, min(y, z));
 }
 
-float DF(vec3 p)
+float box(vec3 p, float size)
+{
+    vec3 d = abs(p) - vec3(size);
+    return min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0));
+}
+
+float cross(vec3 p, float size)
+{
+    vec3 d = abs(p) - vec3(size);
+    float z = min(max(d.x, d.y), 0.0) + length(max(d.xy, 0.0));
+    float x = min(max(d.y, d.z), 0.0) + length(max(d.yz, 0.0));
+    float y = min(max(d.z, d.x), 0.0) + length(max(d.zx, 0.0));
+
+    return min(x, min(y, z));
+}
+
+{% call(realFuncName, Box, Cross) defTmplFunc("DF_tmpl", "Box", "Cross") %}
+float `realFuncName`(vec3 p)
 {
     vec3 p2 = p;
     const float size = 0.125;
-    float d = max(round_box(p2, size), -round_cross(p2, size/3.0));
+    float d = max(`Box`(p2, size), -`Cross`(p2, size/3.0));
 
     p2 = p2/size * 0.5;
     float scale = 1.0/size * 0.5;
@@ -78,10 +97,21 @@ float DF(vec3 p)
         p2 -= vec3(0.5);
         p2 = fract(p2) - vec3(0.5);
         scale *= 3.0;
-        d = max(d, -round_cross(p2, 1.0/6.0)/scale);
+        d = max(d, -`Cross`(p2, 1.0/6.0)/scale);
     }
 
     return d;
+}
+{% endcall %}
+
+float DF(vec3 p)
+{
+    return `tfcall("DF_tmpl", "round_box", "round_cross")`(p);
+}
+
+float DFbox(vec3 p)
+{
+    return `tfcall("DF_tmpl", "box", "cross")`(p);
 }
 
 vec3 grad(vec3 p)
@@ -94,17 +124,24 @@ vec3 grad(vec3 p)
         (DF(p+delta.yyx) - DF(p-delta.yyx)));
 }
 
-float div_grad(vec3 p)
+{% call(realFuncName, F) defTmplFunc("div_grad_tmpl", "F") %}
+float `realFuncName`(vec3 p)
 {
-    const vec2 delta = vec2(0.0005, 0.0) * 2.0;
+    const vec2 delta = vec2(0.0002, 0.0) * 2.0;
     return
     (
-        (DF(p+delta.xyy) - 2.0*DF(p) + DF(p-delta.xyy))
+        (`F`(p+delta.xyy) - 2.0*`F`(p) + `F`(p-delta.xyy))
         +
-        (DF(p+delta.yxy) - 2.0*DF(p) + DF(p-delta.yxy))
+        (`F`(p+delta.yxy) - 2.0*`F`(p) + `F`(p-delta.yxy))
         +
-        (DF(p+delta.yyx) - 2.0*DF(p) + DF(p-delta.yyx))
+        (`F`(p+delta.yyx) - 2.0*`F`(p) + `F`(p-delta.yyx))
     ) / (delta.x * delta.x);
+}
+{% endcall %}
+
+float div_grad_box(vec3 p)
+{
+    return `tfcall("div_grad_tmpl", "DFbox")`(p);
 }
 
 vec3 align_on_DF(vec3 star_pos)
