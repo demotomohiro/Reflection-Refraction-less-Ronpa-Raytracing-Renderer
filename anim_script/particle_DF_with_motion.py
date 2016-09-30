@@ -89,7 +89,7 @@ def scene_x_slide(timeinfo):
         """\
         float nrmz = (star_pos.z - DFmin.z) / DFsize.z;
         float t = 0.08 + nrmz*1.85 - `t01`*2.0;
-        color_scaling = t > 0.0 ? 1.0 : 1.0/max(-t*32.0, 0.01) + 1.0;
+        vary_color.xyz += t > 0.0 ? vec3(0.0) : vec3(0.125*0.25/max(-t*32.0, 0.01));
         t = max(t, 0.0);
         float x0 = (star_pos.x+0.25);
         star_pos.x += pow(t*8., x0*8.0+0.25)*3.0 + t*x0*8.0;
@@ -105,7 +105,7 @@ def scene_suck(timeinfo):
         float nrmdist = length(star_pos - center) / length(DFmin - center);
         float t = clamp(1.0 + nrmdist - `t01`*2.0, 0.0, 1.0);
         star_pos = (star_pos - center)*pow(t, 4.0) + center;
-        color_scaling = max(pow((t - 0.2)/(1.0-0.2), 8.0), 0.0);
+        vary_color.xyz *= max(pow((t - 0.2)/(1.0-0.2), 8.0), 0.0);
         """
     )
     return render_template(code, timeinfo, 2.0)
@@ -173,7 +173,7 @@ def scene_sphere(timeinfo):
         dg = dg*dg;
         vec3 sphere = normalize(star_pos)*DFsize.x*0.5*sqrt(2.0)*(1.0 - t2*0.25);
         star_pos = mix(star_pos, sphere, (t0 + t2)*(1.0 - t4));
-        color_scaling = mix(1.0, min(dg*dg*0.0625*0.125*0.125, 8.0), t1);
+        vary_color.xyz *= mix(1.0, min(dg*dg*0.0625*0.125*0.125, 8.0), t1);
         """
     )
     return render_template(code, timeinfo)
