@@ -32,7 +32,7 @@ def render_frame(source, i):
             "--output",                 os.path.join(outputDir, outputName + "_frm%05d.png" % i),
             "--output_w",               str(1920),
             "--output_h",               str(1080),
-            "--hide_gl_info",
+            "--hide_gl_info",           "on",
             "main_shader.frag",
             "-",
             "particle_DF.frag"
