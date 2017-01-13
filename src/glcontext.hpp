@@ -43,10 +43,10 @@ private:
 	HDC		hdc;
 	HGLRC	hglrc;
 #else
-	Display		*display;
-	Colormap	cmap;
-	Window 		win;
-	GLXContext	ctx;
+	Display		*display = nullptr;
+	Colormap	cmap = 0;
+	Window 		win = 0;
+	GLXContext	ctx = nullptr;
 #endif
 };
 

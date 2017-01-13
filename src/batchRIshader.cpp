@@ -123,12 +123,6 @@ struct renderer
 		ret(1),
 		is_render(false)
 	{
-		if(!cntxt.get_is_success())
-		{
-			cerr << "Failed to initialize OpenGL context\n";
-			return;
-		}
-
         if(!opts.hide_gl_info)
         {
             print_gl_info();
@@ -340,7 +334,6 @@ private:
 
 	int						ret;
 	bool					is_render;
-	gl_util::glcontext		cntxt;
 	gl_util::scoped_program	program;
 	gl_util::scoped_program	particle_program;
     GLint                   coord_offset_loc    = -1;
@@ -379,6 +372,13 @@ int main(int argc, char* argv[])
 	{
 		return opts.ret_code;
 	}
+
+    gl_util::glcontext cntxt;
+    if(!cntxt.get_is_success())
+    {
+        cerr << "Failed to initialize OpenGL context\n";
+        return 1;
+    }
 
 	renderer r(opts);
 	if(!r.get_is_render())

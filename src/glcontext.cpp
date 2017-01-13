@@ -508,11 +508,21 @@ bool glcontext::init
 
 void glcontext::uninit()
 {
-	glXMakeCurrent( display, 0, 0 );
-	glXDestroyContext( display, ctx );
+    if(!display)
+        return;
 
-	XDestroyWindow( display, win );
-	XFreeColormap( display, cmap );
+    if(ctx)
+    {
+        glXMakeCurrent( display, 0, 0 );
+        glXDestroyContext( display, ctx );
+    }
+
+    if(win)
+        XDestroyWindow( display, win );
+
+    if(cmap)
+        XFreeColormap( display, cmap );
+
 	XCloseDisplay( display );
 }
 #endif
