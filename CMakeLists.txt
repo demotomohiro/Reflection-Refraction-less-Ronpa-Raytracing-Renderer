@@ -41,6 +41,9 @@ if(UNIX)
     target_link_libraries(batchRIshader ${X11_X11_LIB})
 endif()
 
+find_package(GLUtil CONFIG REQUIRED contextUtil)
+target_link_libraries(batchRIshader GLUtil::contextUtil)
+
 enable_testing()
 add_test(
     NAME grid_test
