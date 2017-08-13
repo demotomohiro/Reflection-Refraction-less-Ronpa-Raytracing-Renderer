@@ -24,17 +24,9 @@ include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(batchRIshader ${Boost_LIBRARIES})
 
 find_package(GLEW REQUIRED)
-include_directories(${GLEW_INCLUDE_DIRS})
-target_link_libraries(batchRIshader ${GLEW_LIBRARIES})
-
 find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIR})
-target_link_libraries(batchRIshader ${OPENGL_gl_LIBRARY})
-
 find_package(PNG REQUIRED)
-include_directories(${PNG_INCLUDE_DIRS})
-target_link_libraries(batchRIshader ${PNG_LIBRARIES})
-add_definitions(${PNG_DEFINITIONS})
+target_link_libraries(batchRIshader OpenGL::GL GLEW::GLEW PNG::PNG)
 
 if(UNIX)
     find_package(X11 REQUIRED)
