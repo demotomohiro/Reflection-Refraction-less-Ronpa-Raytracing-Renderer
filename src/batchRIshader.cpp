@@ -28,6 +28,8 @@ void GLEWAPIENTRY gl_debug_callback(
 	GLsizei length, const char *message,
 	const GLvoid * /*userParam*/)
 {
+    using namespace GLUtil;
+
 	(source);
 	(type);
 	(id);
