@@ -20,19 +20,41 @@ Random 268435456 particles: [30720x17280 741MB](https://drive.google.com/file/d/
 * OpenGL 4.3
 
 ## Required libraries:
-* Boost(program_options wave)
+* Boost(program_options, wave)
 * GLEW
 * libpng
+* [GLUtil](https://github.com/demotomohiro/GLUtil)
+
+## Required tools:
+CMake
+### On Linux
+gcc
+### On Windows
+Visual Studio 2015
 
 ## How to build
 ```console
 git clone https://github.com/demotomohiro/Reflection-Refraction-less-Ronpa-Raytracing-Renderer.git
 mkdir build
 cd build
-cmake ../Reflection-Refraction-less-Ronpa-Raytracing-Renderer -G "Visual Studio 14 2015 Win64"
 ```
+On Windows
+```console
+cmake -G "Visual Studio 14 2015 Win64" ../Reflection-Refraction-less-Ronpa-Raytracing-Renderer
+msbuild batchRIshader.vcxproj
+```
+You can also open batchRIshader.sln with Visual Studio and build it. 
 
-Open build/batchRIshader.sln with Visual Studio and build it. 
+On Linux
+```console
+cmake ../Reflection-Refraction-less-Ronpa-Raytracing-Renderer
+make
+```
+### cmake options:
+* -CMAKE_BUILD_TYPE=[Debug|Release|RelWithDebInfo|MinSizeRel]
+Specifies the build type. This options is ignored when used with Visual Studio.
+* -DCMAKE_PREFIX_PATH="/path/to/library;/other/path"
+List of directories used to search libraries.
 
 
 This software is released under the MIT License, see LICENSE.
