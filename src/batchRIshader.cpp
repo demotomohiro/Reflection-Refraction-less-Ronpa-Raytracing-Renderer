@@ -22,43 +22,6 @@ using namespace std;
 
 namespace
 {
-void GLEWAPIENTRY gl_debug_callback(
-	GLenum source, GLenum type, GLuint id,
-	GLenum severity,
-	GLsizei length, const char *message,
-	const GLvoid * /*userParam*/)
-{
-    using namespace GLUtil;
-
-	(source);
-	(type);
-	(id);
-	(severity);
-	(length);
-
-	cerr << "Message from glDebugMessageCallback:\n";
-	cerr <<
-		"In " << get_gl_call_info().funcname << ", " <<
-		get_gl_call_info().filename << ":" <<
-		get_gl_call_info().line <<
-		endl;
-
-	cerr << message << endl;
-}
-
-void init_gl()
-{
-	GLint cntxt_flags;
-	glGetIntegerv(GL_CONTEXT_FLAGS, &cntxt_flags);
-	if(cntxt_flags & GL_CONTEXT_FLAG_DEBUG_BIT && glIsEnabled(GL_DEBUG_OUTPUT)==GL_TRUE)
-	{
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		GLuint ids = 0;
-		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, &ids, GL_TRUE);
-		glDebugMessageCallback(&gl_debug_callback, NULL);
-	}
-}
-
 void print_gl_info()
 {
     GLUtil::print_context_info();
@@ -95,7 +58,7 @@ struct renderer
             print_gl_info();
         }
 
-		init_gl();
+        GLUtil::enable_debug_message_cerr_out_if_available();
 		if(!init_fullscreen_program(opts))
         {
             cerr << "Failed to initialize fullscreen program\n";
