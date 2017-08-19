@@ -11,8 +11,8 @@
 
 #include "gl_common.hpp"
 #include "glcontext.hpp"
-#include "shader.hpp"
-#include "cstd_shader.hpp"
+#include "GLUtil/shader.hpp"
+#include "GLUtil/cStdShader.hpp"
 #include "frame_buffer_object.hpp"
 #include "image_file.hpp"
 #include "options.hpp"
@@ -138,10 +138,10 @@ private:
 
 	bool	init_fullscreen_program(const options& opts)
 	{
-		using namespace gl_util;
+        using namespace GLUtil;
 
 		bool status;
-		scoped_shader vert_shader(load_shader(GL_VERTEX_SHADER, vert_shader_source, opts.macro_definitions, status));
+		scoped_shader vert_shader(load_shader(GL_VERTEX_SHADER, vert_shader_source, status, opts.macro_definitions));
 		if(!status)
 		{
 			return false;
@@ -149,7 +149,7 @@ private:
 
 		scoped_shader frag_shader(
 			load_shader_from_file(
-				GL_FRAGMENT_SHADER, opts.source_file, opts.macro_definitions, status));
+				GL_FRAGMENT_SHADER, opts.source_file, status, opts.macro_definitions));
 		if(!status)
 		{
 			return false;
@@ -187,7 +187,7 @@ private:
 
 	bool	init_particle_program(const options& opts)
 	{
-		using namespace gl_util;
+        using namespace GLUtil;
 
 		if(!opts.is_draw_particles)
 		{
@@ -197,7 +197,7 @@ private:
 		bool status;
 		scoped_shader vert_shader(
 			load_shader_from_file(
-				GL_VERTEX_SHADER, opts.particle_vert_source_file, opts.macro_definitions, status));
+				GL_VERTEX_SHADER, opts.particle_vert_source_file, status, opts.macro_definitions));
 		if(!status)
 		{
 			return false;
@@ -205,7 +205,7 @@ private:
 
 		scoped_shader frag_shader(
 			load_shader_from_file(
-				GL_FRAGMENT_SHADER, opts.particle_frag_source_file, opts.macro_definitions, status));
+				GL_FRAGMENT_SHADER, opts.particle_frag_source_file, status, opts.macro_definitions));
 		if(!status)
 		{
 			return false;
@@ -264,8 +264,8 @@ private:
 
 	int						ret;
 	bool					is_render;
-	gl_util::scoped_program	program;
-	gl_util::scoped_program	particle_program;
+	GLUtil::scoped_program	program;
+	GLUtil::scoped_program	particle_program;
     GLint                   coord_offset_loc    = -1;
     GLint                   viewport_offset_loc = -1;
     GLint                   vertexID_offset_loc = -1;

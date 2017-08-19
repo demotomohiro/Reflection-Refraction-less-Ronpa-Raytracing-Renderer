@@ -2,12 +2,10 @@ cmake_minimum_required(VERSION 3.0)
 project(batchRIshader)
 add_executable(batchRIshader
 src/batchRIshader.cpp
-src/cstd_shader.cpp
 src/frame_buffer_object.cpp
 src/glcontext.cpp
 src/image_file.cpp
 src/options.cpp
-src/shader.cpp
 )
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD 14)
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD_REQUIRED ON)
@@ -16,9 +14,9 @@ if(MSVC)
     set(Boost_USE_STATIC_LIBS ON)
 endif()
 if(CMAKE_VERSION VERSION_LESS 3.5)
-    find_package(Boost REQUIRED COMPONENTS program_options wave thread filesystem system)
+    find_package(Boost REQUIRED COMPONENTS program_options thread filesystem system)
 else()
-    find_package(Boost REQUIRED COMPONENTS program_options wave)
+    find_package(Boost REQUIRED COMPONENTS program_options)
 endif()
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(batchRIshader ${Boost_LIBRARIES})
@@ -38,8 +36,8 @@ if(UNIX)
     target_link_libraries(batchRIshader ${X11_X11_LIB})
 endif()
 
-find_package(GLUtil CONFIG REQUIRED contextUtil)
-target_link_libraries(batchRIshader GLUtil::contextUtil)
+find_package(GLUtil CONFIG REQUIRED contextUtil shader cStdShader)
+target_link_libraries(batchRIshader GLUtil::contextUtil GLUtil::shader GLUtil::cStdShader)
 
 enable_testing()
 add_test(
