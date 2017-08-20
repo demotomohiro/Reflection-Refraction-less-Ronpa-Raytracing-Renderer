@@ -182,6 +182,14 @@ bool glcontext::init
 	if(wglewIsSupported("WGL_ARB_create_context") == 1)
 	{
 		hglrc = wglCreateContextAttribsARB(hdc, 0, attribList);
+        if(hglrc == 0)
+        {
+            cerr << "Failed to wglCreateContextAttribsARB\n";
+            wglMakeCurrent(NULL,NULL);
+            wglDeleteContext(tmpCntxt);
+            return false;
+        }
+
 		wglMakeCurrent(NULL,NULL);
 		wglDeleteContext(tmpCntxt);
 		wglMakeCurrent(hdc, hglrc);
