@@ -121,12 +121,6 @@ bool glcontext::init
 
 	wglMakeCurrent(hdc, tmpCntxt);
 
-	if(!check_gl_ver(gl_req_major_ver, gl_req_minor_ver))
-	{
-		cerr << "OpenGL " << gl_req_major_ver << "." << gl_req_minor_ver << " or heigher is required\n";
-		return false;
-	}
-
 #if 0
 	const static int attribList[] =
 	{
@@ -196,6 +190,12 @@ bool glcontext::init
 	}else
 	{
 		hglrc = tmpCntxt;
+	}
+
+	if(!check_gl_ver(gl_req_major_ver, gl_req_minor_ver))
+	{
+		cerr << "OpenGL " << gl_req_major_ver << "." << gl_req_minor_ver << " or heigher is required\n";
+		return false;
 	}
 
 	return true;
