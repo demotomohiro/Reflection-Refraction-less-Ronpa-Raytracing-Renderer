@@ -6,6 +6,7 @@ src/frame_buffer_object.cpp
 src/glcontext.cpp
 src/image_file.cpp
 src/options.cpp
+src/renderer.cpp
 )
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD 14)
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD_REQUIRED ON)
