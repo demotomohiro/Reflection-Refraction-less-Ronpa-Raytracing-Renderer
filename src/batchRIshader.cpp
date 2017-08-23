@@ -40,49 +40,12 @@ private:
 
 }
 
-
-int main(int argc, char* argv[])
+bool render_one_frame(
+    const options& opts, const renderer& r, vector<unsigned char>& color_buf)
 {
-	using namespace gl_util;
 	using namespace std::chrono;
 
-	options opts(argc, argv);
-	if(!opts.is_render)
-	{
-		return opts.ret_code;
-	}
-
-    gl_util::glcontext cntxt;
-    if(!cntxt.get_is_success())
-    {
-        cerr << "Failed to initialize OpenGL context\n";
-        return 1;
-    }
-
-	renderer r(opts);
-	if(!r.get_is_render())
-	{
-		return r.get_ret();
-	}
-
-	GLuint prog;
-	glGetIntegerv(GL_CURRENT_PROGRAM, reinterpret_cast<GLint*>(&prog));
-	assert(glIsProgram(prog)==GL_TRUE);
-
 	const render_info& ri = opts.rinfo;
-
-//	frame_buffer_object fbo
-	frame_buffer_object_with_texture fbo
-	(
-		ri.get_draw_w(), ri.get_draw_h(), ri.super_sampling_level
-	);
-
-	if(!fbo.get_is_success())
-	{
-		return 1;
-	}
-
-	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
 
     progress_display progress(ri.num_tile_x * ri.num_tile_y * (1+(opts.is_draw_particles ? opts.num_div_particles : 0)));
 
@@ -134,13 +97,63 @@ int main(int argc, char* argv[])
 	if(!write_image(ri.output_w, ri.output_h, opts.output_file, color_buf.data()))
 	{
 		cerr << "Failed to write file!\n";
-		return 1;
+		return false;
 	}
 
 	const steady_clock::time_point writing_end = steady_clock::now();
 	cout	<< "completed in "
 			<< duration_cast<duration<double>>(writing_end - render_end).count()
 			<< " seconds." << endl;
+
+    return true;
+}
+
+int main(int argc, char* argv[])
+{
+	using namespace gl_util;
+
+	options opts(argc, argv);
+	if(!opts.is_render)
+	{
+		return opts.ret_code;
+	}
+
+    gl_util::glcontext cntxt;
+    if(!cntxt.get_is_success())
+    {
+        cerr << "Failed to initialize OpenGL context\n";
+        return 1;
+    }
+
+	renderer r(opts);
+	if(!r.get_is_render())
+	{
+		return r.get_ret();
+	}
+
+	GLuint prog;
+	glGetIntegerv(GL_CURRENT_PROGRAM, reinterpret_cast<GLint*>(&prog));
+	assert(glIsProgram(prog)==GL_TRUE);
+
+	const render_info& ri = opts.rinfo;
+
+//	frame_buffer_object fbo
+	frame_buffer_object_with_texture fbo
+	(
+		ri.get_draw_w(), ri.get_draw_h(), ri.super_sampling_level
+	);
+
+	if(!fbo.get_is_success())
+	{
+		return 1;
+	}
+
+	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
+
+    if(!render_one_frame(opts, r, color_buf))
+    {
+        return 1;
+    }
 
 	return 0;
 }
