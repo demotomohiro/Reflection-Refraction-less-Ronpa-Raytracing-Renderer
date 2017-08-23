@@ -72,6 +72,17 @@ renderer::renderer(const options& opts):
     is_render = true;
 }
 
+void renderer::set_iFrame(const int iFrame)
+{
+    if(fullscreen_iFrame_loc != -1)
+    {
+        assert(glIsProgram(program));
+        glUseProgram(program);
+
+        glUniform1i(fullscreen_iFrame_loc, iFrame);
+    }
+}
+
 void renderer::partial_draw_fullscreen(
     const float coord_offset_x, const float coord_offset_y) const
 {
@@ -162,6 +173,8 @@ bool renderer::init_fullscreen_program(const options& opts)
     {
         cerr << "Warning, add & use \"uniform vec2 coord_offset;\" in your fullscreen fragment shader.\n";
     }
+
+    fullscreen_iFrame_loc = glGetUniformLocation(program, "iFrame");
 
     return true;
 }

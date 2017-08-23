@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <chrono>
 
 #pragma warning( pop )
@@ -38,9 +39,24 @@ private:
     int i = 0;
 };
 
+string get_output_filename(const string& base, const int iFrame)
+{
+    ostringstream iFrame_str;
+    iFrame_str.fill('0');
+    iFrame_str.width(5);
+    iFrame_str << iFrame;
+    auto output_file = base;
+    const auto pos = base.find_last_of('.');
+
+    return
+        pos == string::npos
+        ? output_file + iFrame_str.str()
+        : output_file.insert(pos, iFrame_str.str());
 }
 
-bool render_one_frame(
+}
+
+void render_one_frame(
     const options& opts, const renderer& r, vector<unsigned char>& color_buf)
 {
 	using namespace std::chrono;
@@ -91,25 +107,11 @@ bool render_one_frame(
 	cout	<< "Rendering completed in "
 			<< duration_cast<duration<double>>(render_end - render_begin).count()
 			<< " seconds." << endl;
-	cout << "Writing to file" << endl;
-
-//	cout << color_buf[0] << endl;
-	if(!write_image(ri.output_w, ri.output_h, opts.output_file, color_buf.data()))
-	{
-		cerr << "Failed to write file!\n";
-		return false;
-	}
-
-	const steady_clock::time_point writing_end = steady_clock::now();
-	cout	<< "completed in "
-			<< duration_cast<duration<double>>(writing_end - render_end).count()
-			<< " seconds." << endl;
-
-    return true;
 }
 
 int main(int argc, char* argv[])
 {
+	using namespace std::chrono;
 	using namespace gl_util;
 
 	options opts(argc, argv);
@@ -150,9 +152,26 @@ int main(int argc, char* argv[])
 
 	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
 
-    if(!render_one_frame(opts, r, color_buf))
+    for(int i=0; i<5; ++i)
     {
-        return 1;
+        r.set_iFrame(i);
+        render_one_frame(opts, r, color_buf);
+
+        cout << "Writing to file" << endl;
+
+        const steady_clock::time_point render_end = steady_clock::now();
+        const string output_file = get_output_filename(opts.output_file, i);
+    //	cout << color_buf[0] << endl;
+        if(!write_image(ri.output_w, ri.output_h, output_file, color_buf.data()))
+        {
+            cerr << "Failed to write file!\n";
+            return 1;
+        }
+
+        const steady_clock::time_point writing_end = steady_clock::now();
+        cout	<< "completed in "
+                << duration_cast<duration<double>>(writing_end - render_end).count()
+                << " seconds." << endl;
     }
 
 	return 0;

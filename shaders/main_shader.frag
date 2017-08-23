@@ -6,6 +6,7 @@ out vec3 out_color;
 
 uniform vec2 coord_offset;
 uniform vec2 resolution;
+uniform int  iFrame;
 
 float fbm(vec2 pos)
 {
@@ -14,7 +15,7 @@ float fbm(vec2 pos)
 	for(int i=0; i<6; ++i)
 	{
         vec2 deriv, deriv2;
-        float v = smplxNoise2D(pos*s, deriv, deriv2, uvec2(0xabcdeeeeu, 0x1234u + i));
+        float v = smplxNoise2D(pos*s, deriv, deriv2, uvec2(0xabcdeeeeu + uint(iFrame), 0x1234u + i));
         v = v * 49.7 + 0.5;
         c += v/s;
 		s *= 2.0;
@@ -29,4 +30,8 @@ void main()
 
 	float scale = 1./(1. + dot(pos, pos)*16.0);
 	out_color = vec3(fbm(pos))*scale;
+    if(iFrame == 1)
+    {
+        out_color = vec3(1.0, 0.0, 0.0);
+    }
 }

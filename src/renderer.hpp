@@ -20,6 +20,7 @@ struct renderer
 		return is_render;
 	}
 
+    void set_iFrame(const int iFrame);
     void partial_draw_fullscreen(
         const float coord_offset_x, const float coord_offset_y) const;
     void prepare_draw_particles(
@@ -31,7 +32,7 @@ private:
 
 	bool init_fullscreen_program(const options& opts);
 	bool init_particle_program(const options& opts);
-	
+
 
 	int						ret;
 	bool					is_render;
@@ -40,5 +41,6 @@ private:
     GLint                   coord_offset_loc    = -1;
     GLint                   viewport_offset_loc = -1;
     GLint                   vertexID_offset_loc = -1;
+    GLint                   fullscreen_iFrame_loc = -1;
 };
 
