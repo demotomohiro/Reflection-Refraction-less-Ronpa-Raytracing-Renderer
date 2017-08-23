@@ -20,9 +20,12 @@ struct renderer
 		return is_render;
 	}
 
-    void partial_draw_fullscreen(const float coord_offset_x, const float coord_offset_y);
-    void prepare_draw_particles(GLsizei i, GLsizei j, const render_info& ri);
-    void partial_draw_particles(GLsizei k, const GLsizei num_particles_per_draw);
+    void partial_draw_fullscreen(
+        const float coord_offset_x, const float coord_offset_y) const;
+    void prepare_draw_particles(
+        GLsizei i, GLsizei j, const render_info& ri) const;
+    void partial_draw_particles(
+        GLsizei k, const GLsizei num_particles_per_draw) const;
 
 private:
 

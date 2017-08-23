@@ -72,7 +72,8 @@ renderer::renderer(const options& opts):
     is_render = true;
 }
 
-void renderer::partial_draw_fullscreen(const float coord_offset_x, const float coord_offset_y)
+void renderer::partial_draw_fullscreen(
+    const float coord_offset_x, const float coord_offset_y) const
 {
     assert(glIsProgram(program));
     glUseProgram(program);
@@ -84,7 +85,8 @@ void renderer::partial_draw_fullscreen(const float coord_offset_x, const float c
     GL_CALL(glDrawArrays(GL_TRIANGLES, 0, 3));
 }
 
-void renderer::prepare_draw_particles(GLsizei i, GLsizei j, const render_info& ri)
+void renderer::prepare_draw_particles(
+    GLsizei i, GLsizei j, const render_info& ri) const
 {
     assert(glIsProgram(particle_program));
 
@@ -102,7 +104,8 @@ void renderer::prepare_draw_particles(GLsizei i, GLsizei j, const render_info& r
     }
 }
 
-void renderer::partial_draw_particles(GLsizei k, const GLsizei num_particles_per_draw)
+void renderer::partial_draw_particles(
+    GLsizei k, const GLsizei num_particles_per_draw) const
 {
     if(vertexID_offset_loc != -1)
         glUniform1i
@@ -111,7 +114,7 @@ void renderer::partial_draw_particles(GLsizei k, const GLsizei num_particles_per
             num_particles_per_draw*k
         );
     GL_CALL(glDrawArrays(GL_POINTS, 0, num_particles_per_draw));
-    glFinish();	//TDRÎô.
+    glFinish();	//Prevent TDR(Timeout Detection and Recovery)
 }
 
 bool renderer::init_fullscreen_program(const options& opts)
