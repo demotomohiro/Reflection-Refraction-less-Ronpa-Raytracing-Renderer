@@ -68,6 +68,7 @@ struct options
 	GLsizei		num_div_particles;
     bool        hide_gl_info;
     int         num_frames = 1;
+    float       fps = 30.0f;
 	render_info	rinfo;
 };
 

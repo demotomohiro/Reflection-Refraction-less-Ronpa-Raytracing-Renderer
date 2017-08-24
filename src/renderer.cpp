@@ -72,7 +72,7 @@ renderer::renderer(const options& opts):
     is_render = true;
 }
 
-void renderer::set_iFrame(const int iFrame)
+void renderer::set_iFrame(const int iFrame, const float iTime)
 {
     if(fullscreen_iFrame_loc != -1)
     {
@@ -80,6 +80,14 @@ void renderer::set_iFrame(const int iFrame)
         glUseProgram(program);
 
         glUniform1i(fullscreen_iFrame_loc, iFrame);
+    }
+
+    if(fullscreen_iTime_loc != -1)
+    {
+        assert(glIsProgram(program));
+        glUseProgram(program);
+
+        glUniform1f(fullscreen_iTime_loc, iTime);
     }
 }
 
@@ -175,6 +183,7 @@ bool renderer::init_fullscreen_program(const options& opts)
     }
 
     fullscreen_iFrame_loc = glGetUniformLocation(program, "iFrame");
+    fullscreen_iTime_loc = glGetUniformLocation(program, "iTime");
 
     return true;
 }

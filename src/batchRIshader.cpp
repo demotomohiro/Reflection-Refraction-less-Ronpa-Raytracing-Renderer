@@ -154,7 +154,8 @@ int main(int argc, char* argv[])
 
     for(int i=0; i<opts.num_frames; ++i)
     {
-        r.set_iFrame(i);
+        const float iTime = float(i) / opts.fps;
+        r.set_iFrame(i, iTime);
         render_one_frame(opts, r, color_buf);
 
         cout << "Writing to file" << endl;
