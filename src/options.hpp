@@ -67,6 +67,7 @@ struct options
 	GLsizei		num_particles;
 	GLsizei		num_div_particles;
     bool        hide_gl_info;
+    int         num_frames = 1;
 	render_info	rinfo;
 };
 

@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 
 	std::vector<unsigned char> color_buf(ri.output_w*ri.output_h*3);
 
-    for(int i=0; i<5; ++i)
+    for(int i=0; i<opts.num_frames; ++i)
     {
         r.set_iFrame(i);
         render_one_frame(opts, r, color_buf);
