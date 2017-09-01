@@ -89,6 +89,20 @@ void renderer::set_iFrame(const int iFrame, const float iTime)
 
         glUniform1f(fullscreen_iTime_loc, iTime);
     }
+
+    if(particle_iFrame_loc != -1)
+    {
+        assert(glIsProgram(particle_program));
+        glUseProgram(particle_program);
+        glUniform1i(particle_iFrame_loc, iFrame);
+    }
+
+    if(particle_iTime_loc != -1)
+    {
+        assert(glIsProgram(particle_program));
+        glUseProgram(particle_program);
+        glUniform1f(particle_iTime_loc, iTime);
+    }
 }
 
 void renderer::partial_draw_fullscreen(
@@ -261,6 +275,9 @@ bool renderer::init_particle_program(const options& opts)
     {
         cerr << "Warning, add & use \"uniform int vertexID_offset;\" in your particle vertex shader.\n";
     }
+
+    particle_iFrame_loc = glGetUniformLocation(particle_program, "iFrame");
+    particle_iTime_loc  = glGetUniformLocation(particle_program, "iTime");
 
     return true;
 }

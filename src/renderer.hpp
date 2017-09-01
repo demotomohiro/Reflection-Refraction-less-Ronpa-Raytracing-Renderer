@@ -43,5 +43,7 @@ private:
     GLint                   vertexID_offset_loc = -1;
     GLint                   fullscreen_iFrame_loc = -1;
     GLint                   fullscreen_iTime_loc = -1;
+    GLint                   particle_iFrame_loc = -1;
+    GLint                   particle_iTime_loc = -1;
 };
 
