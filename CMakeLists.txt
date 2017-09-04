@@ -59,6 +59,12 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 
+add_test(
+    NAME test_simplexnoise3d
+    COMMAND batchRIshader --output ${CMAKE_BINARY_DIR}/test_simplexnoise3d.png --output_w 1920 --output_h 1080 test_simplexnoise3d.frag
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
+    )
+
 foreach(i RANGE 0)
     math(EXPR n "65536 << ${i}")
 add_test(
