@@ -37,6 +37,7 @@ const char* vert_shader_source =
 "}\n"
 ;
 
+bool enable_emit_line_directives = false;
 }
 
 renderer::renderer(const options& opts):
@@ -163,7 +164,7 @@ bool renderer::init_fullscreen_program(const options& opts)
 
     scoped_shader frag_shader(
         load_shader_from_file(
-            GL_FRAGMENT_SHADER, opts.source_file, status, opts.macro_definitions));
+            GL_FRAGMENT_SHADER, opts.source_file, status, opts.macro_definitions, enable_emit_line_directives));
     if(!status)
     {
         return false;
@@ -214,7 +215,7 @@ bool renderer::init_particle_program(const options& opts)
     bool status;
     scoped_shader vert_shader(
         load_shader_from_file(
-            GL_VERTEX_SHADER, opts.particle_vert_source_file, status, opts.macro_definitions));
+            GL_VERTEX_SHADER, opts.particle_vert_source_file, status, opts.macro_definitions, enable_emit_line_directives));
     if(!status)
     {
         return false;
@@ -222,7 +223,7 @@ bool renderer::init_particle_program(const options& opts)
 
     scoped_shader frag_shader(
         load_shader_from_file(
-            GL_FRAGMENT_SHADER, opts.particle_frag_source_file, status, opts.macro_definitions));
+            GL_FRAGMENT_SHADER, opts.particle_frag_source_file, status, opts.macro_definitions, enable_emit_line_directives));
     if(!status)
     {
         return false;
