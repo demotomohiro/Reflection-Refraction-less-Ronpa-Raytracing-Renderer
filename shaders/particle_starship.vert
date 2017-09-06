@@ -3,6 +3,7 @@
 #include "particle.s"
 #include "HSV.s"
 #include "philox.s"
+#include "simplexnoise3d.s"
 
 #define ZNEAR	0.001
 #define ZFAR	1.0
@@ -39,6 +40,24 @@ void output_star(vec3 star_pos, float star_dim)
     brOutputPointSize(star_dim, pvm);
 }
 
+vec3 smplxNoiseMove(vec3 pos)
+{
+    vec3 p1 = pos;
+    float scaling = 12.0;
+
+    for(int i=0; i<4; ++i)
+    {
+        vec3 deriv;
+        float c = smplxNoise3D(p1*scaling, deriv, uvec2(135, 984));
+        deriv *= scaling;
+        if(length(deriv) < 0.0001)
+            return p1;
+        vec3 delta = c*deriv/dot(deriv, deriv);
+        p1 = p1 - delta;
+    }
+    return p1;
+}
+
 void gen_star()
 {
 	int vid = brGetVertexID();
@@ -46,7 +65,8 @@ void gen_star()
     vec3 star_pos = uintToFloat(Philox4x32(uvec4(vid, 3, 7, 11), uvec2(1274053, 440525))).xyz;
 	vec3 centor = vec3(0.0, 0.0, -0.5);
     star_pos = star_pos - vec3(0.5) + centor;
-    star_pos.z += iTime*0.1;
+    star_pos = mix(star_pos, smplxNoiseMove(star_pos), smoothstep(0.0, 1.0, min(iTime*0.5, 1.0)));
+    star_pos.z = -fract(star_pos.z - iTime*iTime*0.25);
 
     //Following code visualize star_pos which went deep space as white points.
 #if 0
