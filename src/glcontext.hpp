@@ -9,7 +9,7 @@ struct glcontext
 {
 	glcontext
 	(
-		GLint gl_req_major_ver=4,
+		GLint gl_req_major_ver=3,
 		GLint gl_req_minor_ver=3
 	);
 
