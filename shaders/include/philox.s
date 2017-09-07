@@ -12,19 +12,31 @@ It is explained in 2.2 and 3.3 in this paper:
 The Skein Hash Function Family
 by Niels Ferguson, Stefan Lucks, Bruce Schneier, Doug Whiting, Mihir Bellare, Tadayoshi Kohno, Jon Callas, Jesse Walker
 
+You can download original Random123 source code from here:
+http://www.thesalmons.org/john/random123/
+
+How to use:
 uvec4 counter;
 uvec2 key;
 uintToFloat(Philox4x32(counter, key))
 returns pseudorandom vec4 value where each components are [0, 1).
 */
-
-uvec2 sbox32(uvec2 LR, uint key) {
-    const uint M = 0xCD9E8D57;
-
-    uvec2 ret;
-    umulExtended(LR.y, M, ret.y, ret.x);
-    ret.y = ret.y ^ key ^ LR.x;
+uvec2 philox4x32Bumpkey(uvec2 key) {
+    uvec2 ret = key;
+    ret.x += 0x9E3779B9u;
+    ret.y += 0xBB67AE85u;
     return ret;
+}
+
+uvec4 philox4x32Round(uvec4 state, uvec2 key) {
+    const uint M0 = 0xD2511F53u, M1 = 0xCD9E8D57u;
+    uint hi0, lo0, hi1, lo1;
+    umulExtended(M0, state.x, hi0, lo0);
+    umulExtended(M1, state.z, hi1, lo1);
+
+    return uvec4(
+        hi1^state.y^key.x, lo1,
+        hi0^state.w^key.y, lo0);
 }
 
 uvec4 Philox4x32(uvec4 plain, uvec2 key) {
@@ -32,15 +44,8 @@ uvec4 Philox4x32(uvec4 plain, uvec2 key) {
     uvec2 round_key = key;
 
     for(int i=0; i<7; ++i) {
-        state.xy = sbox32(state.xy, round_key.x);
-        state.zw = sbox32(state.zw, round_key.y);
-
-        uint ty = state.y;
-        state.y = state.w;
-        state.w = ty;
-        uint carry;
-        round_key.x = uaddCarry(round_key.x, 0x84CAA73B, carry);
-        round_key.y += 0xBB67AE85 + carry;
+        state = philox4x32Round(state, round_key);
+        round_key = philox4x32Bumpkey(round_key);
     }
 
     return state;
