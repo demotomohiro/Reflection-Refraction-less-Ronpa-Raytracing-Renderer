@@ -22,7 +22,7 @@ void print_gl_info()
 }
 
 const char* vert_shader_source =
-"#version 430\n"
+"#version 330\n"
 "\n"
 "out float v;"
 "void main()\n"

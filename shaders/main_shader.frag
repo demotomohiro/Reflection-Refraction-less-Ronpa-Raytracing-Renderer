@@ -1,4 +1,4 @@
-#version 430
+#version 330
 
 #include "simplexnoise2d.s"
 
@@ -16,7 +16,7 @@ float fbm(vec2 pos, uint seed)
 	for(int i=0; i<6; ++i)
 	{
         vec2 deriv, deriv2;
-        float v = smplxNoise2D(pos*s, deriv, deriv2, uvec2(0xabcdeeeeu + seed, 0x1234u + i));
+        float v = smplxNoise2D(pos*s, deriv, deriv2, uvec2(0xabcdeeeeu + seed, 0x1234u + uint(i)));
         v = v * 49.7 + 0.5;
         c += v/s;
 		s *= 2.0;
@@ -30,7 +30,7 @@ void main()
 	vec2 pos = ((gl_FragCoord.xy+coord_offset)*2.0 - resolution)/resolution.y;
 
 	float scale = 1./(1. + dot(pos, pos)*16.0);
-    uint ti = int(floor(iTime));
+    uint ti = uint(int(floor(iTime)));
     float tr = fract(iTime);
     float f0 = fbm(pos, ti), f1 = fbm(pos, ti + 1u);
 	out_color = vec3(mix(f0, f1, tr))*scale;

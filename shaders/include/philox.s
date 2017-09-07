@@ -21,6 +21,25 @@ uvec2 key;
 uintToFloat(Philox4x32(counter, key))
 returns pseudorandom vec4 value where each components are [0, 1).
 */
+void umulExtended_(uint a, uint b, out uint hi, out uint lo) {
+    const uint WHALF = 16u;
+    const uint LOMASK = (1u<<WHALF)-1u;
+    lo = a*b;               /* full low multiply */
+    uint ahi = a>>WHALF;
+    uint alo = a& LOMASK;
+    uint bhi = b>>WHALF;
+    uint blo = b& LOMASK;
+
+    uint ahbl = ahi*blo;
+    uint albh = alo*bhi;
+
+    uint ahbl_albh = ((ahbl&LOMASK) + (albh&LOMASK));
+    hi = ahi*bhi + (ahbl>>WHALF) +  (albh>>WHALF);
+    hi += ahbl_albh >> WHALF; /* carry from the sum of lo(ahbl) + lo(albh) ) */
+    /* carry from the sum with alo*blo */
+    hi += ((lo >> WHALF) < (ahbl_albh&LOMASK)) ? 1u : 0u;
+}
+
 uvec2 philox4x32Bumpkey(uvec2 key) {
     uvec2 ret = key;
     ret.x += 0x9E3779B9u;
@@ -31,8 +50,8 @@ uvec2 philox4x32Bumpkey(uvec2 key) {
 uvec4 philox4x32Round(uvec4 state, uvec2 key) {
     const uint M0 = 0xD2511F53u, M1 = 0xCD9E8D57u;
     uint hi0, lo0, hi1, lo1;
-    umulExtended(M0, state.x, hi0, lo0);
-    umulExtended(M1, state.z, hi1, lo1);
+    umulExtended_(M0, state.x, hi0, lo0);
+    umulExtended_(M1, state.z, hi1, lo1);
 
     return uvec4(
         hi1^state.y^key.x, lo1,

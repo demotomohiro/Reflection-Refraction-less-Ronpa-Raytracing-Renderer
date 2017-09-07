@@ -1,4 +1,4 @@
-#version 430
+#version 330
 
 #include "particle.s"
 #include "HSV.s"
@@ -30,7 +30,7 @@ mat4
 	0.0,				0.0,				-2.0*ZFAR*ZNEAR/(ZFAR-ZNEAR),	0.0
 );
 
-const mat4 pvm = projection;
+mat4 pvm = projection;
 
 out vec4 vary_color;
 
