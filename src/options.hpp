@@ -15,7 +15,7 @@ struct render_info
 
 	render_info():
 		output_w(1920*2),	output_h(1080*2),
-		num_tile_x(2),	num_tile_y(2),
+		num_tile_x(1),	num_tile_y(1),
 		super_sampling_level(1)
 	{
 	}
@@ -67,7 +67,7 @@ struct options
 	GLsizei		num_particles;
 	GLsizei		num_div_particles;
     bool        hide_gl_info;
-    int         num_frames = 1;
+    int         num_frames = 60;
     float       fps = 30.0f;
 	render_info	rinfo;
 };
