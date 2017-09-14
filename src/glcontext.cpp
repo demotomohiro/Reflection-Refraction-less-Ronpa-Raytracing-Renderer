@@ -45,6 +45,12 @@ glcontext::glcontext
 		return;
 	}
 
+	if(!check_gl_ver(gl_req_major_ver, gl_req_minor_ver))
+	{
+		cerr << "OpenGL " << gl_req_major_ver << "." << gl_req_minor_ver << " or heigher is required\n";
+        return;
+	}
+
 	isSuccess = true;
 }
 
@@ -329,12 +335,6 @@ bool glcontext::init
 	}else
 	{
 		hglrc = tmpCntxt;
-	}
-
-	if(!check_gl_ver(gl_req_major_ver, gl_req_minor_ver))
-	{
-		cerr << "OpenGL " << gl_req_major_ver << "." << gl_req_minor_ver << " or heigher is required\n";
-		return false;
 	}
 
 	return true;
@@ -631,13 +631,6 @@ bool glcontext::init
 
 	glXMakeCurrent( display, win, ctx );
 
-	if(!check_gl_ver(gl_req_major_ver, gl_req_minor_ver))
-	{
-		cerr << "OpenGL " << gl_req_major_ver << "." << gl_req_minor_ver << " or heigher is required\n";
-		return false;
-	}
-
-	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
