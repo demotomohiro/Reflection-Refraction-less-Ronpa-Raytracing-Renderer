@@ -2,6 +2,12 @@
 
 #include "gl_common.hpp"
 
+#ifdef USE_EGL
+#   define EGL_EGLEXT_PROTOTYPES
+#   include <EGL/egl.h>
+#   include <EGL/eglext.h>
+#endif
+
 namespace gl_util
 {
 
@@ -38,6 +44,9 @@ private:
 	);
 	void uninit();
 
+#ifdef USE_EGL
+    EGLDisplay display;
+#else
 #ifdef _WIN32
 	HWND	hWnd;
 	HDC		hdc;
@@ -47,6 +56,7 @@ private:
 	Colormap	cmap = 0;
 	Window 		win = 0;
 	GLXContext	ctx = nullptr;
+#endif
 #endif
 };
 
