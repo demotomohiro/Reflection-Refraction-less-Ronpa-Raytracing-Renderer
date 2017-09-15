@@ -8,6 +8,10 @@ src/image_file.cpp
 src/options.cpp
 src/renderer.cpp
 )
+if(WIN32)
+    target_sources(batchRIshader PRIVATE src/wglcontext.cpp)
+endif()
+
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD 14)
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD_REQUIRED ON)
 
