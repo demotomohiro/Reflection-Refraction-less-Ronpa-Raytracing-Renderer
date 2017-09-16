@@ -5,6 +5,44 @@
 using namespace std;
 using namespace gl_util;
 
+class glcontext::priv::detail
+{
+public:
+
+    bool init
+    (
+        GLint gl_req_major_ver,
+        GLint gl_req_minor_ver
+    );
+
+    ~detail();
+
+private:
+
+	Display		*display = nullptr;
+	Colormap	cmap = 0;
+	Window 		win = 0;
+	GLXContext	ctx = nullptr;
+};
+
+glcontext::priv::priv():
+    pimpl(make_unique<detail>())
+{
+}
+
+glcontext::priv::~priv()
+{
+}
+
+bool glcontext::priv::init
+(
+    GLint gl_req_major_ver,
+    GLint gl_req_minor_ver
+)
+{
+    return pimpl->init(gl_req_major_ver, gl_req_minor_ver);
+}
+
 // Helper to check for extension string presence.  Adapted from:
 //   http://www.opengl.org/resources/features/OGLextensions/
 static bool isExtensionSupported(const char *extList, const char *extension)
@@ -46,6 +84,15 @@ static int ctxErrorHandler( Display *dpy, XErrorEvent *ev )
 }
 
 bool glcontext::init
+(
+	GLint gl_req_major_ver,
+	GLint gl_req_minor_ver
+)
+{
+    return true;
+}
+
+bool glcontext::priv::detail::init
 (
 	GLint gl_req_major_ver,
 	GLint gl_req_minor_ver
@@ -298,6 +345,10 @@ bool glcontext::init
 }
 
 void glcontext::uninit()
+{
+}
+
+glcontext::priv::detail::~detail()
 {
     if(!display)
         return;

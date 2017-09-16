@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gl_common.hpp"
+#include <memory>
 
 #ifdef USE_EGL
 #   define EGL_EGLEXT_PROTOTYPES
@@ -44,6 +45,27 @@ private:
 	);
 	void uninit();
 
+    class priv
+    {
+    public:
+
+        priv();
+        ~priv();
+
+        bool init
+        (
+            GLint gl_req_major_ver,
+            GLint gl_req_minor_ver
+        );
+
+    private:
+
+        class detail;
+        std::unique_ptr<detail>   pimpl;
+    };
+
+    priv impl;
+
 #ifdef USE_EGL
     EGLDisplay display;
 #else
@@ -52,10 +74,6 @@ private:
 	HDC		hdc;
 	HGLRC	hglrc;
 #else
-	Display		*display = nullptr;
-	Colormap	cmap = 0;
-	Window 		win = 0;
-	GLXContext	ctx = nullptr;
 #endif
 #endif
 };
