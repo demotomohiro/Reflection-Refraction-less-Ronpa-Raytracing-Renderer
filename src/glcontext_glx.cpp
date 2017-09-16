@@ -1,6 +1,7 @@
 #include "glcontext.hpp"
 #include <cstring>
 #include <iostream>
+#include <GL/glxew.h>
 
 using namespace std;
 using namespace gl_util;
