@@ -9,7 +9,7 @@ src/options.cpp
 src/renderer.cpp
 )
 if(WIN32)
-    target_sources(batchRIshader PRIVATE src/wglcontext.cpp)
+    target_sources(batchRIshader PRIVATE src/glcontext_wgl.cpp)
 endif()
 
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD 14)
