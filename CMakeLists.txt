@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
+
+if(NOT WIN32)
+    option(BR_USE_EGL "Create OpenGL context using EGL" on)
+endif()
+
 project(batchRIshader)
 add_executable(batchRIshader
 src/batchRIshader.cpp
@@ -30,10 +35,13 @@ find_package(GLEW REQUIRED)
 find_package(PNG REQUIRED)
 target_link_libraries(batchRIshader GLEW::GLEW PNG::PNG)
 
-find_library(EGL_LIBRARY EGL)
-#Without linking GLESv2, glGetString always returns 0 when using EGL.
-find_library(GLESv2_LIBRARY GLESv2)
-if(NOT EGL_LIBRARY OR NOT GLESv2_LIBRARY)
+if(BR_USE_EGL)
+    find_library(EGL_LIBRARY EGL)
+    #Without linking GLESv2, glGetString always returns 0 when using EGL.
+    find_library(GLESv2_LIBRARY GLESv2)
+endif()
+
+if(NOT BR_USE_EGL OR NOT EGL_LIBRARY OR NOT GLESv2_LIBRARY)
     find_package(OpenGL REQUIRED)
     if(CMAKE_VERSION VERSION_LESS 3.8)
         target_link_libraries(batchRIshader ${OPENGL_gl_LIBRARY})
