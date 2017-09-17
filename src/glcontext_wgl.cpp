@@ -2,11 +2,58 @@
 
 #include <tchar.h>
 #include <iostream>
+#include <GL/wglew.h>
 
 using namespace std;
 using namespace gl_util;
 
+class glcontext::priv::detail
+{
+public:
+
+    bool init
+    (
+        GLint gl_req_major_ver,
+        GLint gl_req_minor_ver
+    );
+
+    ~detail();
+
+private:
+
+    HWND	hWnd;
+    HDC		hdc;
+    HGLRC	hglrc;
+};
+
+glcontext::priv::priv():
+    pimpl(make_unique<detail>())
+{
+}
+
+glcontext::priv::~priv()
+{
+}
+
+bool glcontext::priv::init
+(
+    GLint gl_req_major_ver,
+    GLint gl_req_minor_ver
+)
+{
+    return pimpl->init(gl_req_major_ver, gl_req_minor_ver);
+}
+
 bool glcontext::init
+(
+	GLint gl_req_major_ver,
+	GLint gl_req_minor_ver
+)
+{
+    return true;
+}
+
+bool glcontext::priv::detail::init
 (
     GLint gl_req_major_ver,
     GLint gl_req_minor_ver
@@ -148,6 +195,10 @@ bool glcontext::init
 }
 
 void glcontext::uninit()
+{
+}
+
+glcontext::priv::detail::~detail()
 {
     wglMakeCurrent(NULL, NULL);
 

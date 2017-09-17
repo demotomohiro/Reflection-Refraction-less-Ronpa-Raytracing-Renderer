@@ -68,13 +68,6 @@ private:
 
 #ifdef USE_EGL
     EGLDisplay display;
-#else
-#ifdef _WIN32
-	HWND	hWnd;
-	HDC		hdc;
-	HGLRC	hglrc;
-#else
-#endif
 #endif
 };
 
