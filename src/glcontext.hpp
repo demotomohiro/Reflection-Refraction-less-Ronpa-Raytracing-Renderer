@@ -27,13 +27,6 @@ struct glcontext
 		return isSuccess;
 	}
 
-#if 0
-	void draw() const
-	{
-		SwapBuffers(hdc);
-	}
-#endif
-
 	bool	isSuccess;
 
 private:

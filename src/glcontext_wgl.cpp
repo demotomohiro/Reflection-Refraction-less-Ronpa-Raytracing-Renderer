@@ -1,5 +1,6 @@
 #include "glcontext.hpp"
 
+#include <cassert>
 #include <tchar.h>
 #include <iostream>
 #include <GL/wglew.h>
@@ -21,9 +22,9 @@ public:
 
 private:
 
-    HWND	hWnd;
-    HDC		hdc;
-    HGLRC	hglrc;
+    HWND	hWnd    = 0;
+    HDC		hdc     = 0;
+    HGLRC	hglrc   = 0;
 };
 
 glcontext::priv::priv():
@@ -59,9 +60,7 @@ bool glcontext::priv::detail::init
     GLint gl_req_minor_ver
 )
 {
-    hWnd = 0;
-    hdc = 0;
-    hglrc = 0;
+    assert(hWnd == 0 && hdc == 0 && hglrc == 0);
 
     hWnd =
         CreateWindowEx(
