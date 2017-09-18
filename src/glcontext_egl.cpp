@@ -1,6 +1,9 @@
 #include "glcontext.hpp"
 #include <iostream>
 
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+
 using namespace std;
 using namespace gl_util;
 
@@ -47,15 +50,6 @@ namespace
         EGL_RENDERABLE_TYPE,    EGL_OPENGL_BIT,
         EGL_NONE
     };
-}
-
-bool glcontext::init
-(
-    GLint gl_req_major_ver,
-    GLint gl_req_minor_ver
-)
-{
-    return true;
 }
 
 bool glcontext::priv::detail::init
@@ -171,10 +165,6 @@ bool glcontext::priv::detail::init
     }
 
     return true;
-}
-
-void glcontext::uninit()
-{
 }
 
 glcontext::priv::detail::~detail()

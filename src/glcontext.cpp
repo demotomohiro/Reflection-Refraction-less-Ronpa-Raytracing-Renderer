@@ -33,11 +33,6 @@ glcontext::glcontext
 ):
 	isSuccess(false)
 {
-	if(!init(gl_req_major_ver, gl_req_minor_ver))
-	{
-		return;
-	}
-
     if(!impl.init(gl_req_major_ver, gl_req_minor_ver))
     {
         return;
@@ -51,9 +46,3 @@ glcontext::glcontext
 
 	isSuccess = true;
 }
-
-glcontext::~glcontext()
-{
-	uninit();
-}
-
