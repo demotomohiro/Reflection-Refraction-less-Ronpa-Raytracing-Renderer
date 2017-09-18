@@ -4,6 +4,41 @@
 using namespace std;
 using namespace gl_util;
 
+class glcontext::priv::detail
+{
+public:
+
+    bool init
+    (
+        GLint gl_req_major_ver,
+        GLint gl_req_minor_ver
+    );
+
+    ~detail();
+
+private:
+
+    EGLDisplay display;
+};
+
+glcontext::priv::priv():
+    pimpl(make_unique<detail>())
+{
+}
+
+glcontext::priv::~priv()
+{
+}
+
+bool glcontext::priv::init
+(
+    GLint gl_req_major_ver,
+    GLint gl_req_minor_ver
+)
+{
+    return pimpl->init(gl_req_major_ver, gl_req_minor_ver);
+}
+
 namespace
 {
     constexpr EGLint attrib_list[] =
@@ -18,6 +53,15 @@ bool glcontext::init
 (
     GLint gl_req_major_ver,
     GLint gl_req_minor_ver
+)
+{
+    return true;
+}
+
+bool glcontext::priv::detail::init
+(
+	GLint gl_req_major_ver,
+	GLint gl_req_minor_ver
 )
 {
     display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -130,6 +174,10 @@ bool glcontext::init
 }
 
 void glcontext::uninit()
+{
+}
+
+glcontext::priv::detail::~detail()
 {
     if(eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) == EGL_FALSE)
     {

@@ -58,10 +58,6 @@ private:
     };
 
     priv impl;
-
-#ifdef USE_EGL
-    EGLDisplay display;
-#endif
 };
 
 }
