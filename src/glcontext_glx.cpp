@@ -319,8 +319,13 @@ bool glcontext::priv::detail::init
 	else
 		cout << "Direct GLX rendering context obtained" <<endl;
 
-	glXMakeCurrent( display, win, ctx );
+	if(!glXMakeCurrent( display, win, ctx ))
+    {
+        cerr << "Failed to glXMakeCurrent" << endl;
+        return false;
+    }
 
+    glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
