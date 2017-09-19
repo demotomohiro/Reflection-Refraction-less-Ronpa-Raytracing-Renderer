@@ -45,15 +45,6 @@ bool glcontext::priv::init
     return pimpl->init(gl_req_major_ver, gl_req_minor_ver);
 }
 
-bool glcontext::init
-(
-	GLint gl_req_major_ver,
-	GLint gl_req_minor_ver
-)
-{
-    return true;
-}
-
 bool glcontext::priv::detail::init
 (
     GLint gl_req_major_ver,
@@ -191,10 +182,6 @@ bool glcontext::priv::detail::init
     }
 
     return true;
-}
-
-void glcontext::uninit()
-{
 }
 
 glcontext::priv::detail::~detail()
