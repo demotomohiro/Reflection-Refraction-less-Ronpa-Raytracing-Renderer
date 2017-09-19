@@ -27,6 +27,8 @@ private:
     {
     public:
 
+        //Constructor and destructor of unique_ptr cannot be compiled if class detail is incomplete type.
+        //So priv() and ~priv() must be defined in the cpp file where class detail is defined.
         priv();
         ~priv();
 
