@@ -57,7 +57,6 @@ if(NOT BR_USE_EGL OR NOT EGL_LIBRARY OR NOT GLESv2_LIBRARY)
     endif()
 else()
     target_sources(batchRIshader PRIVATE src/glcontext_egl.cpp)
-    set_property(TARGET batchRIshader APPEND PROPERTY COMPILE_DEFINITIONS USE_EGL)
     target_link_libraries(batchRIshader ${EGL_LIBRARY} ${GLESv2_LIBRARY})
 endif()
 
