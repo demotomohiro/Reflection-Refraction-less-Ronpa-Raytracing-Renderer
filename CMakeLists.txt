@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
+
+if(NOT WIN32)
+    option(BR_USE_EGL "Create OpenGL context using EGL" on)
+endif()
+
 project(batchRIshader)
 add_executable(batchRIshader
 src/batchRIshader.cpp
@@ -8,6 +13,10 @@ src/image_file.cpp
 src/options.cpp
 src/renderer.cpp
 )
+if(WIN32)
+    target_sources(batchRIshader PRIVATE src/glcontext_wgl.cpp)
+endif()
+
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD 14)
 set_target_properties(batchRIshader PROPERTIES CXX_STANDARD_REQUIRED ON)
 
@@ -23,18 +32,32 @@ include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(batchRIshader ${Boost_LIBRARIES})
 
 find_package(GLEW REQUIRED)
-find_package(OpenGL REQUIRED)
 find_package(PNG REQUIRED)
-if(CMAKE_VERSION VERSION_LESS 3.8)
-    target_link_libraries(batchRIshader ${OPENGL_gl_LIBRARY} GLEW::GLEW PNG::PNG)
-    include_directories(${OPENGL_INCLUDE_DIR})
-else()
-    target_link_libraries(batchRIshader OpenGL::GL GLEW::GLEW PNG::PNG)
+target_link_libraries(batchRIshader GLEW::GLEW PNG::PNG)
+
+if(BR_USE_EGL)
+    find_library(EGL_LIBRARY EGL)
+    #Without linking GLESv2, glGetString always returns 0 when using EGL.
+    find_library(GLESv2_LIBRARY GLESv2)
 endif()
 
-if(UNIX)
-    find_package(X11 REQUIRED)
-    target_link_libraries(batchRIshader ${X11_X11_LIB})
+if(NOT BR_USE_EGL OR NOT EGL_LIBRARY OR NOT GLESv2_LIBRARY)
+    find_package(OpenGL REQUIRED)
+    if(CMAKE_VERSION VERSION_LESS 3.8)
+        target_link_libraries(batchRIshader ${OPENGL_gl_LIBRARY})
+        include_directories(${OPENGL_INCLUDE_DIR})
+    else()
+        target_link_libraries(batchRIshader OpenGL::GL)
+    endif()
+
+    if(UNIX)
+        find_package(X11 REQUIRED)
+        target_link_libraries(batchRIshader ${X11_X11_LIB})
+        target_sources(batchRIshader PRIVATE src/glcontext_glx.cpp)
+    endif()
+else()
+    target_sources(batchRIshader PRIVATE src/glcontext_egl.cpp)
+    target_link_libraries(batchRIshader ${EGL_LIBRARY} ${GLESv2_LIBRARY})
 endif()
 
 find_package(GLUtil CONFIG REQUIRED contextUtil shader cStdShader)
