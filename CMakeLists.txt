@@ -85,6 +85,7 @@ add_test(
 add_test(
     NAME animation_test
     COMMAND batchRIshader --output ${CMAKE_BINARY_DIR}/animation.png --output_w 1920 --output_h 1080 --num_frames 10 main_shader.frag particle_starship.vert particle_star.frag
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/shaders
     )
 
 add_test(
